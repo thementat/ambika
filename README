@@ -1,4 +1,10 @@
-Ambika, a hybrid MIDI polysynth and voicecard host.
+Y A M - Yet Another Mutation
+
+This is a project for an alternative firmware for Ambika, a hybrid MIDI polysynth and voicecard host.
+
+Here's a short summary of changes _compared_ to official Ambika firmware:
+
+* Triangle oscillator ('triangle') is no longer band-limited (to reduce memory footprint) and is folded (instead of clipped) upon modulation. 
 
 Ambika consists of a compact motherboard serving as a "host" for up to 6 sound synthesis voicecard. While this design is primarily intended to be a flexible hybrid polysynth, it could also be used as a drum module/drum machine.
 

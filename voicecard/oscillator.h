@@ -169,6 +169,7 @@ class Oscillator {
   void RenderFm(uint8_t* buffer);
   void Render8BitLand(uint8_t* buffer);
   void RenderVowel(uint8_t* buffer);
+  void RenderNewTriangle(uint8_t* buffer);
   void RenderDirtyPwm(uint8_t* buffer);
   void RenderQuadSawPad(uint8_t* buffer);
   void RenderFilteredNoise(uint8_t* buffer);

@@ -63,10 +63,6 @@ extern const prog_uint8_t wav_res_bandlimited_saw_2[] PROGMEM;
 extern const prog_uint8_t wav_res_bandlimited_saw_3[] PROGMEM;
 extern const prog_uint8_t wav_res_bandlimited_saw_4[] PROGMEM;
 extern const prog_uint8_t wav_res_bandlimited_saw_5[] PROGMEM;
-extern const prog_uint8_t wav_res_bandlimited_triangle_0[] PROGMEM;
-extern const prog_uint8_t wav_res_bandlimited_triangle_3[] PROGMEM;
-extern const prog_uint8_t wav_res_bandlimited_triangle_4[] PROGMEM;
-extern const prog_uint8_t wav_res_bandlimited_triangle_5[] PROGMEM;
 extern const prog_uint8_t wav_res_vowel_data[] PROGMEM;
 extern const prog_uint8_t wav_res_distortion[] PROGMEM;
 extern const prog_uint8_t wav_res_lfo_waveforms[] PROGMEM;
@@ -120,31 +116,17 @@ extern const prog_uint8_t wav_res_wavetables[] PROGMEM;
 #define WAV_RES_BANDLIMITED_SAW_5_SIZE 257
 #define WAV_RES_BANDLIMITED_SAW_6 16
 #define WAV_RES_BANDLIMITED_SAW_6_SIZE 257
-#define WAV_RES_BANDLIMITED_TRIANGLE_0 17
-#define WAV_RES_BANDLIMITED_TRIANGLE_0_SIZE 257
-#define WAV_RES__BANDLIMITED_TRIANGLE_0 18
-#define WAV_RES__BANDLIMITED_TRIANGLE_0_SIZE 257
-#define WAV_RES___BANDLIMITED_TRIANGLE_0 19
-#define WAV_RES___BANDLIMITED_TRIANGLE_0_SIZE 257
-#define WAV_RES_BANDLIMITED_TRIANGLE_3 20
-#define WAV_RES_BANDLIMITED_TRIANGLE_3_SIZE 257
-#define WAV_RES_BANDLIMITED_TRIANGLE_4 21
-#define WAV_RES_BANDLIMITED_TRIANGLE_4_SIZE 257
-#define WAV_RES_BANDLIMITED_TRIANGLE_5 22
-#define WAV_RES_BANDLIMITED_TRIANGLE_5_SIZE 257
-#define WAV_RES_BANDLIMITED_TRIANGLE_6 23
-#define WAV_RES_BANDLIMITED_TRIANGLE_6_SIZE 257
-#define WAV_RES_VOWEL_DATA 24
+#define WAV_RES_VOWEL_DATA 17
 #define WAV_RES_VOWEL_DATA_SIZE 63
-#define WAV_RES_DISTORTION 25
+#define WAV_RES_DISTORTION 18
 #define WAV_RES_DISTORTION_SIZE 256
-#define WAV_RES_LFO_WAVEFORMS 26
+#define WAV_RES_LFO_WAVEFORMS 19
 #define WAV_RES_LFO_WAVEFORMS_SIZE 2
-#define WAV_RES_ENV_EXPO 27
+#define WAV_RES_ENV_EXPO 20
 #define WAV_RES_ENV_EXPO_SIZE 257
-#define WAV_RES_WAVES 28
+#define WAV_RES_WAVES 21
 #define WAV_RES_WAVES_SIZE 10320
-#define WAV_RES_WAVETABLES 29
+#define WAV_RES_WAVETABLES 22
 #define WAV_RES_WAVETABLES_SIZE 288
 typedef avrlib::ResourcesManager<
     ResourceId,

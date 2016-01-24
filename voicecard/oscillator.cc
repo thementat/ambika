@@ -118,9 +118,7 @@ void Oscillator::RenderSimpleWavetable(uint8_t* buffer) {
   if (shape_ != WAVEFORM_SINE) {
     uint8_t wave_index = balance_index & 0xf;
     uint8_t base_resource_id = shape_ == WAVEFORM_SAW ?
-        WAV_RES_BANDLIMITED_SAW_0 :
-        (shape_ == WAVEFORM_SQUARE ? WAV_RES_BANDLIMITED_SQUARE_0  : 
-        WAV_RES_BANDLIMITED_TRIANGLE_0);
+        WAV_RES_BANDLIMITED_SAW_0 : WAV_RES_BANDLIMITED_SQUARE_0;
     wave_1_index = base_resource_id + wave_index;
     wave_index = U8AddClip(wave_index, 1, kNumZonesFullSampleRate);
     wave_2_index = base_resource_id + wave_index;
@@ -131,30 +129,16 @@ void Oscillator::RenderSimpleWavetable(uint8_t* buffer) {
   const prog_uint8_t* wave_1 = waveform_table[wave_1_index];
   const prog_uint8_t* wave_2 = waveform_table[wave_2_index];
 
-  if (shape_ != WAVEFORM_TRIANGLE) {
-    BEGIN_SAMPLE_LOOP
-      UPDATE_PHASE_MORE_REGISTERS
-      uint8_t sample = InterpolateTwoTables(
-          wave_1, wave_2,
-          phase.integral, gain_1, gain_2);
-      if (sample < parameter_) {
-        sample += parameter_ >> 1;
-      }
-      *buffer++ = sample;
-    END_SAMPLE_LOOP
-  } else {
-    // The waveshaper for the triangle is different.
-    BEGIN_SAMPLE_LOOP
-      UPDATE_PHASE_MORE_REGISTERS
-      uint8_t sample = InterpolateTwoTables(
-          wave_1, wave_2,
-          phase.integral, gain_1, gain_2);
-      if (sample < parameter_) {
-        sample = parameter_;
-      }
-      *buffer++ = sample;
-    END_SAMPLE_LOOP
-  }
+  BEGIN_SAMPLE_LOOP
+    UPDATE_PHASE_MORE_REGISTERS
+    uint8_t sample = InterpolateTwoTables(
+        wave_1, wave_2,
+        phase.integral, gain_1, gain_2);
+    if (sample < parameter_) {
+      sample += parameter_ >> 1;
+    }
+    *buffer++ = sample;
+  END_SAMPLE_LOOP
 }
 
 // ------- Casio CZ-like synthesis -------------------------------------------
@@ -357,6 +341,19 @@ void Oscillator::RenderVowel(uint8_t* buffer) {
   END_SAMPLE_LOOP
 }
 
+// ------- New Triangle (Non-band-limited and with different waveshaping) ----
+void Oscillator::RenderNewTriangle(uint8_t* buffer) {
+  BEGIN_SAMPLE_LOOP
+    UPDATE_PHASE
+    uint8_t tri = phase.integral >> 7;
+    uint8_t v = phase.integral & 0x8000 ? tri : ~tri;
+    if (v < parameter_) { // fold triangle
+      v = (parameter_ << 1) - v;
+    }
+    *buffer++ = v;
+  END_SAMPLE_LOOP
+}
+
 // ------- Dirty Pwm (kills kittens) -----------------------------------------
 void Oscillator::RenderDirtyPwm(uint8_t* buffer) {
   BEGIN_SAMPLE_LOOP
@@ -475,7 +472,7 @@ const Oscillator::RenderFn Oscillator::fn_table_[] PROGMEM = {
 
   &Oscillator::RenderSimpleWavetable,
   &Oscillator::RenderBandlimitedPwm,
-  &Oscillator::RenderSimpleWavetable,
+  &Oscillator::RenderNewTriangle,
   &Oscillator::RenderSimpleWavetable,
 
   &Oscillator::RenderCzSaw,
