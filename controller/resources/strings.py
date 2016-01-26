@@ -116,6 +116,7 @@ fm
 pwm
 noise
 vowel
+qpwm
 fmfb
 male
 female

@@ -1,9 +1,12 @@
 Y A M - Yet Another Mutation
 
 This is a project for an alternative firmware for Ambika, a hybrid MIDI polysynth and voicecard host from Mutable Instruments. 
+
 Here's a short summary of changes _compared_ to official Ambika firmware:
 
 * Triangle oscillator ('triangle') is no longer band-limited (to reduce memory footprint) and is folded (instead of clipped) upon modulation. 
+
+* Added a quad PWM oscillator ('qpwm') very similar to the quad saw ('pad'). The modulation parameter simultaneously affects both detuning of the four pwm oscillators and the pulse width.
 
 * Added an alternative FM oscillator ('fmfb') with feedback modulation. Just as for the regular FM oscillator, the modulation parameter defines the FM amount, but for modulation values above 64 increasing amount of feedback is added. At moderate levels the feedback adds 'grit'. At higher settings it adds digital distortion (deliberately left in).
 
