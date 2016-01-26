@@ -1,17 +1,15 @@
 Y A M - Yet Another Mutation
 
-This is a project for an alternative firmware for Ambika, a hybrid MIDI polysynth and voicecard host.
-
+This is a project for an alternative firmware for Ambika, a hybrid MIDI polysynth and voicecard host from Mutable Instruments. 
 Here's a short summary of changes _compared_ to official Ambika firmware:
 
 * Triangle oscillator ('triangle') is no longer band-limited (to reduce memory footprint) and is folded (instead of clipped) upon modulation. 
 
-Ambika consists of a compact motherboard serving as a "host" for up to 6 sound synthesis voicecard. While this design is primarily intended to be a flexible hybrid polysynth, it could also be used as a drum module/drum machine.
+* Added an alternative FM oscillator ('fmfb') with feedback modulation. Just as for the regular FM oscillator, the modulation parameter defines the FM amount, but for modulation values above 64 increasing amount of feedback is added. At moderate levels the feedback adds 'grit'. At higher settings it adds digital distortion (deliberately left in).
 
-The motherboard comprises 6 audio outputs, each one connected to a voicecard ; a global mono output ; a pair of MIDI input/output ; a SD card slot ; a 5V/8V/-8V power supply capable of delivering 150mA on the 8V rails and 350mA on the 5V rail ; the master MCU and the user interface elements. The voicecards (a pair of each being attached to the 3 voicecard ports) are SPI slaves, they receive note and modulation data from the motherboard ; and output monophonic audio, ideally 1V pp.
 
-3 designs of voicecards implementing a refined version of the Shruthi-1 engine are provided. Each of those use a different filter (4-Pole with LM13700, 4-Pole with SSM2164, 2-Pole SVF with SSM2164).
-
+This repository was originally a copy of the Mutable Instruments GitHub Ambika repository at https://github.com/pichenettes/ambika
+ 
 Original developer: Olivier Gillet (olivier@mutable-instruments.net)
 
 The firmware is released under a GPL3.0 license. It includes a variant of the formant synthesis algorithm used in Peter Knight's Cantarino speech synthesizer.

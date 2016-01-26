@@ -250,16 +250,21 @@ void Oscillator::RenderFm(uint8_t* buffer) {
   parameter_ <<= 1;
   
   uint16_t phase_2 = data_.secondary_phase;
+  uint8_t last_output = data_.output_sample;
+  uint8_t fb_phase_mod = 
+    (shape_ == WAVEFORM_FM || parameter_ < 128) ? 0 : parameter_ - 128;
   BEGIN_SAMPLE_LOOP
     UPDATE_PHASE
     phase_2 += increment;
     uint8_t modulator = InterpolateSample(wav_res_sine,
-        phase_2);
+        phase_2 + fb_phase_mod*last_output);
     uint16_t modulation = modulator * parameter_;
-    *buffer++ = InterpolateSample(wav_res_sine,
+    last_output = InterpolateSample(wav_res_sine,
         phase.integral + modulation);
+    *buffer++ = last_output;
   END_SAMPLE_LOOP
   data_.secondary_phase = phase_2;
+  data_.output_sample = last_output;
 }
 
 // ------- 8-bit land --------------------------------------------------------
@@ -494,6 +499,8 @@ const Oscillator::RenderFn Oscillator::fn_table_[] PROGMEM = {
   &Oscillator::RenderDirtyPwm,
   &Oscillator::RenderFilteredNoise,
   &Oscillator::RenderVowel,
+  
+  &Oscillator::RenderFm,
   
   &Oscillator::RenderInterpolatedWavetable
 };

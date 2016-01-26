@@ -372,7 +372,8 @@ inline void Voice::RenderOscillators() {
   for (uint8_t i = 0; i < kNumOscillators; ++i) {
     int16_t pitch = base_pitch;
     // -36 / +36 semitones by the range controller.
-    if (patch_.osc[i].shape != WAVEFORM_FM) {
+    if (patch_.osc[i].shape != WAVEFORM_FM &&
+        patch_.osc[i].shape != WAVEFORM_FM_FB) {
       pitch += S8U8Mul(patch_.osc[i].range, 128);
     }
     // -1 / +1 semitones by the detune controller.

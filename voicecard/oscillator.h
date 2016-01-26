@@ -76,6 +76,7 @@ union OscillatorState {
   FilteredNoiseState no;
   QuadSawPadState qs;
   uint16_t secondary_phase;
+  uint8_t output_sample;
 };
 
 typedef void (*OscRenderFn)(uint8_t* buffer);
