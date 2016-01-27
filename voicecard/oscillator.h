@@ -104,25 +104,13 @@ class Oscillator {
     phase_increment_ = increment;
     sync_input_ = sync_input;
     sync_output_ = sync_output;
-    // A hack: when pulse width is set to 0, use a simple wavetable.
-    if (shape_ == WAVEFORM_SQUARE) {
-      if (parameter_ == 0) {
-        RenderSimpleWavetable(buffer);
-      } else {
-        RenderBandlimitedPwm(buffer);
-      }
-    } else {
-      RenderFn fn;
-      
-      uint8_t index = shape_ >= WAVEFORM_WAVETABLE_1
-          ? WAVEFORM_WAVETABLE_1
-          : shape_;
-      ResourcesManager::Load(fn_table_, index, &fn);
-      if (shape_ == WAVEFORM_WAVEQUENCE) {
-        fn = &Oscillator::RenderWavequence;
-      }
-      (this->*fn)(buffer);
+    RenderFn fn;
+    uint8_t index = shape_ >= WAVEFORM_WAVETABLE_1 ? WAVEFORM_WAVETABLE_1 : shape_;
+    ResourcesManager::Load(fn_table_, index, &fn);
+    if (shape_ == WAVEFORM_WAVEQUENCE) {
+      fn = &Oscillator::RenderWavequence;
     }
+    (this->*fn)(buffer);
   }
   
   inline void set_parameter(uint8_t parameter) {
@@ -161,7 +149,6 @@ class Oscillator {
   uint8_t* sync_output_;
   
   void RenderSilence(uint8_t* buffer);
-  void RenderBandlimitedPwm(uint8_t* buffer);
   void RenderSimpleWavetable(uint8_t* buffer);
   void RenderCzSaw(uint8_t* buffer);
   void RenderCzResoSaw(uint8_t* buffer);
@@ -172,6 +159,8 @@ class Oscillator {
   void RenderVowel(uint8_t* buffer);
   void RenderNewTriangle(uint8_t* buffer);
   void RenderDirtyPwm(uint8_t* buffer);
+  void RenderPolyBlepSaw(uint8_t* buffer);
+  void RenderPolyBlepPwm(uint8_t* buffer);
   void RenderQuadPwm(uint8_t* buffer);
   void RenderQuadSawPad(uint8_t* buffer);
   void RenderFilteredNoise(uint8_t* buffer);

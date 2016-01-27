@@ -51,12 +51,6 @@ extern const prog_uint16_t lut_res_cz_phase_reset[] PROGMEM;
 extern const prog_uint8_t wav_res_formant_sine[] PROGMEM;
 extern const prog_uint8_t wav_res_formant_square[] PROGMEM;
 extern const prog_uint8_t wav_res_sine[] PROGMEM;
-extern const prog_uint8_t wav_res_bandlimited_square_0[] PROGMEM;
-extern const prog_uint8_t wav_res_bandlimited_square_1[] PROGMEM;
-extern const prog_uint8_t wav_res_bandlimited_square_2[] PROGMEM;
-extern const prog_uint8_t wav_res_bandlimited_square_3[] PROGMEM;
-extern const prog_uint8_t wav_res_bandlimited_square_4[] PROGMEM;
-extern const prog_uint8_t wav_res_bandlimited_square_5[] PROGMEM;
 extern const prog_uint8_t wav_res_bandlimited_saw_0[] PROGMEM;
 extern const prog_uint8_t wav_res_bandlimited_saw_1[] PROGMEM;
 extern const prog_uint8_t wav_res_bandlimited_saw_2[] PROGMEM;
@@ -67,6 +61,8 @@ extern const prog_uint8_t wav_res_vowel_data[] PROGMEM;
 extern const prog_uint8_t wav_res_distortion[] PROGMEM;
 extern const prog_uint8_t wav_res_lfo_waveforms[] PROGMEM;
 extern const prog_uint8_t wav_res_env_expo[] PROGMEM;
+extern const prog_uint8_t wav_res_division_table[] PROGMEM;
+extern const prog_uint8_t wav_res_blep_table[] PROGMEM;
 extern const prog_uint8_t wav_res_waves[] PROGMEM;
 extern const prog_uint8_t wav_res_wavetables[] PROGMEM;
 #define STR_RES_DUMMY 0  // dummy
@@ -88,45 +84,35 @@ extern const prog_uint8_t wav_res_wavetables[] PROGMEM;
 #define WAV_RES_FORMANT_SQUARE_SIZE 256
 #define WAV_RES_SINE 2
 #define WAV_RES_SINE_SIZE 257
-#define WAV_RES_BANDLIMITED_SQUARE_0 3
-#define WAV_RES_BANDLIMITED_SQUARE_0_SIZE 257
-#define WAV_RES_BANDLIMITED_SQUARE_1 4
-#define WAV_RES_BANDLIMITED_SQUARE_1_SIZE 257
-#define WAV_RES_BANDLIMITED_SQUARE_2 5
-#define WAV_RES_BANDLIMITED_SQUARE_2_SIZE 257
-#define WAV_RES_BANDLIMITED_SQUARE_3 6
-#define WAV_RES_BANDLIMITED_SQUARE_3_SIZE 257
-#define WAV_RES_BANDLIMITED_SQUARE_4 7
-#define WAV_RES_BANDLIMITED_SQUARE_4_SIZE 257
-#define WAV_RES_BANDLIMITED_SQUARE_5 8
-#define WAV_RES_BANDLIMITED_SQUARE_5_SIZE 257
-#define WAV_RES_BANDLIMITED_SQUARE_6 9
-#define WAV_RES_BANDLIMITED_SQUARE_6_SIZE 257
-#define WAV_RES_BANDLIMITED_SAW_0 10
+#define WAV_RES_BANDLIMITED_SAW_0 3
 #define WAV_RES_BANDLIMITED_SAW_0_SIZE 257
-#define WAV_RES_BANDLIMITED_SAW_1 11
+#define WAV_RES_BANDLIMITED_SAW_1 4
 #define WAV_RES_BANDLIMITED_SAW_1_SIZE 257
-#define WAV_RES_BANDLIMITED_SAW_2 12
+#define WAV_RES_BANDLIMITED_SAW_2 5
 #define WAV_RES_BANDLIMITED_SAW_2_SIZE 257
-#define WAV_RES_BANDLIMITED_SAW_3 13
+#define WAV_RES_BANDLIMITED_SAW_3 6
 #define WAV_RES_BANDLIMITED_SAW_3_SIZE 257
-#define WAV_RES_BANDLIMITED_SAW_4 14
+#define WAV_RES_BANDLIMITED_SAW_4 7
 #define WAV_RES_BANDLIMITED_SAW_4_SIZE 257
-#define WAV_RES_BANDLIMITED_SAW_5 15
+#define WAV_RES_BANDLIMITED_SAW_5 8
 #define WAV_RES_BANDLIMITED_SAW_5_SIZE 257
-#define WAV_RES_BANDLIMITED_SAW_6 16
+#define WAV_RES_BANDLIMITED_SAW_6 9
 #define WAV_RES_BANDLIMITED_SAW_6_SIZE 257
-#define WAV_RES_VOWEL_DATA 17
+#define WAV_RES_VOWEL_DATA 10
 #define WAV_RES_VOWEL_DATA_SIZE 63
-#define WAV_RES_DISTORTION 18
+#define WAV_RES_DISTORTION 11
 #define WAV_RES_DISTORTION_SIZE 256
-#define WAV_RES_LFO_WAVEFORMS 19
+#define WAV_RES_LFO_WAVEFORMS 12
 #define WAV_RES_LFO_WAVEFORMS_SIZE 2
-#define WAV_RES_ENV_EXPO 20
+#define WAV_RES_ENV_EXPO 13
 #define WAV_RES_ENV_EXPO_SIZE 257
-#define WAV_RES_WAVES 21
+#define WAV_RES_DIVISION_TABLE 14
+#define WAV_RES_DIVISION_TABLE_SIZE 128
+#define WAV_RES_BLEP_TABLE 15
+#define WAV_RES_BLEP_TABLE_SIZE 128
+#define WAV_RES_WAVES 16
 #define WAV_RES_WAVES_SIZE 10320
-#define WAV_RES_WAVETABLES 22
+#define WAV_RES_WAVETABLES 17
 #define WAV_RES_WAVETABLES_SIZE 288
 typedef avrlib::ResourcesManager<
     ResourceId,

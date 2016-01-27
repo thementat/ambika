@@ -53,6 +53,34 @@ namespace ambika {
   phase_.integral = phase.integral; \
   phase_.fractional = phase.fractional;
 
+#define CALCULATE_DIVISION_FACTOR(divisor, result_quotient, result_quotient_shifts) \
+  uint16_t div_table_index = divisor; \
+  int8_t result_quotient_shifts = 0; \
+  while (div_table_index > 255) { \
+    div_table_index >>= 1; \
+    --result_quotient_shifts; \
+  } \
+  while (div_table_index < 128) { \
+    div_table_index <<= 1; \
+    ++result_quotient_shifts; \
+  } \
+  div_table_index -= 128; \
+  uint8_t result_quotient = ResourcesManager::Lookup<uint8_t, uint8_t>( \
+    wav_res_division_table, div_table_index);
+  
+#define CALCULATE_BLEP_INDEX(increment, quotient, quotient_shifts, result_blep_index) \
+uint16_t result_blep_index = increment; \
+int8_t shifts = quotient_shifts; \
+while (shifts < 0) { \
+  blep_index >>= 1; \
+  ++shifts; \
+} \
+while (shifts > 0) { \
+  blep_index <<= 1; \
+  --shifts; \
+} \
+result_blep_index = U16U8MulShift8(result_blep_index, quotient);
+  
 // ------- Silence (useful when processing external signals) -----------------
 void Oscillator::RenderSilence(uint8_t* buffer) {
   uint8_t size = kAudioBlockSize;
@@ -61,55 +89,8 @@ void Oscillator::RenderSilence(uint8_t* buffer) {
   }
 }
 
-// ------- Band-limited PWM --------------------------------------------------
-void Oscillator::RenderBandlimitedPwm(uint8_t* buffer) {
-  uint8_t balance_index = U8Swap4(note_ /* - 12 play safe with Aliasing */);
-  uint8_t gain_2 = balance_index & 0xf0;
-  uint8_t gain_1 = ~gain_2;
-
-  uint8_t wave_index = balance_index & 0xf;
-  const prog_uint8_t* wave_1 = waveform_table[
-      WAV_RES_BANDLIMITED_SAW_1 + wave_index];
-  wave_index = U8AddClip(wave_index, 1, kNumZonesHalfSampleRate);
-  const prog_uint8_t* wave_2 = waveform_table[
-      WAV_RES_BANDLIMITED_SAW_1 + wave_index];
-  
-  uint16_t shift = static_cast<uint16_t>(parameter_ + 128) << 8;
-  // For higher pitched notes, simply use 128
-  uint8_t scale = 192 - (parameter_ >> 1);
-  if (note_ > 52) {
-    scale = U8Mix(scale, 102, (note_ - 52) << 2);
-    scale = U8Mix(scale, 102, (note_ - 52) << 2);
-  }
-  phase_increment_ = U24ShiftLeft(phase_increment_);
-  BEGIN_SAMPLE_LOOP
-    phase = U24AddC(phase, phase_increment_int);
-    *sync_output_++ = phase.carry;
-    *sync_output_++ = 0;
-    if (sync_input_[0] || sync_input_[1]) {
-      phase.integral = 0;
-      phase.fractional = 0;
-    }
-    sync_input_ += 2;
-    
-    uint8_t a = InterpolateTwoTables(
-        wave_1, wave_2,
-        phase.integral, gain_1, gain_2);
-    a = U8U8MulShift8(a, scale);
-    uint8_t b = InterpolateTwoTables(
-        wave_1, wave_2,
-        phase.integral + shift, gain_1, gain_2);
-    b = U8U8MulShift8(b, scale);
-    a = a - b + 128;
-    *buffer++ = a;
-    *buffer++ = a;
-    size--;
-  END_SAMPLE_LOOP
-}
-
 // ------- Interpolation between two waveforms from two wavetables -----------
 // The position is determined by the note pitch, to prevent aliasing.
-
 void Oscillator::RenderSimpleWavetable(uint8_t* buffer) {
   uint8_t balance_index = U8Swap4(note_);
   uint8_t gain_2 = balance_index & 0xf0;
@@ -117,8 +98,7 @@ void Oscillator::RenderSimpleWavetable(uint8_t* buffer) {
   uint8_t wave_1_index, wave_2_index;
   if (shape_ != WAVEFORM_SINE) {
     uint8_t wave_index = balance_index & 0xf;
-    uint8_t base_resource_id = shape_ == WAVEFORM_SAW ?
-        WAV_RES_BANDLIMITED_SAW_0 : WAV_RES_BANDLIMITED_SQUARE_0;
+    uint8_t base_resource_id = WAV_RES_BANDLIMITED_SAW_0;
     wave_1_index = base_resource_id + wave_index;
     wave_index = U8AddClip(wave_index, 1, kNumZonesFullSampleRate);
     wave_2_index = base_resource_id + wave_index;
@@ -367,6 +347,107 @@ void Oscillator::RenderDirtyPwm(uint8_t* buffer) {
   END_SAMPLE_LOOP
 }
 
+// ------- Polyblep Saw ------------------------------------------------------
+// Heavily inspired by Oliviers experimental implementation for STM but
+// dumbed down and much less generic (does not do polyblep for sync etc)
+void Oscillator::RenderPolyBlepSaw(uint8_t* buffer) {
+  
+  // calculate (1/increment) for later multiplication with current phase
+  CALCULATE_DIVISION_FACTOR(phase_increment_.integral, quotient, quotient_shifts)
+
+  // Revert to pure saw (=single blep) to avoid cpu overload for high notes
+  uint8_t mod_parameter = note_ > 107 ? 0 : parameter_;
+  uint8_t high = phase_.integral >= 0x8000;
+
+  uint8_t next_sample = data_.output_sample;
+  BEGIN_SAMPLE_LOOP
+    UPDATE_PHASE
+    uint8_t this_sample = next_sample;
+
+    // Compute naive waveform
+    next_sample = (phase.integral < 0x8000) ?
+      (phase.integral >> 8) :
+      (phase.integral >> 8) - mod_parameter;
+
+    if (phase.carry) {
+      high = false;
+      CALCULATE_BLEP_INDEX(phase.integral, quotient, quotient_shifts, blep_index)
+      this_sample -= U8U8MulShift8(
+        ResourcesManager::Lookup<uint8_t, uint8_t>(wav_res_blep_table, blep_index),
+        255-mod_parameter /* scale blep to size of edge */);
+      next_sample += U8U8MulShift8(
+        ResourcesManager::Lookup<uint8_t, uint8_t>(wav_res_blep_table, 127-blep_index),
+        255-mod_parameter /* scale blep to size of edge */);
+    }
+    else if (mod_parameter && !high && phase.integral >= 0x8000) {
+      high = true;
+      CALCULATE_BLEP_INDEX(phase.integral-0x8000, quotient, quotient_shifts, blep_index)
+      this_sample -= U8U8MulShift8(
+        ResourcesManager::Lookup<uint8_t, uint8_t>(wav_res_blep_table, blep_index),
+        mod_parameter /* scale blep to size of edge */);
+      next_sample += U8U8MulShift8(
+        ResourcesManager::Lookup<uint8_t, uint8_t>(wav_res_blep_table, 127-blep_index),
+        mod_parameter /* scale blep to size of edge */);
+    }
+
+    *buffer++ = this_sample;
+  END_SAMPLE_LOOP
+
+  data_.output_sample = next_sample;
+}
+
+// ------- Polyblep Pwm ------------------------------------------------------
+// Heavily inspired by Oliviers experimental implementation for STM but
+// dumbed down and much less generic (does not do polyblep for sync etc)
+void Oscillator::RenderPolyBlepPwm(uint8_t* buffer) {
+
+  // calculate (1/increment) for later multiplication with current phase
+  CALCULATE_DIVISION_FACTOR(phase_increment_.integral, quotient, quotient_shifts)
+
+  // Revert to pure saw (=single blep) to avoid cpu overload for high notes
+  uint8_t revert_to_saw = note_ > 107;
+     
+  // PWM modulation (constrained to extend over at least one increment) 
+  uint8_t pwm_limit = 127 - (phase_increment_.integral >> 8);
+  uint16_t pwm_phase = 
+    (parameter_ < pwm_limit) ? /* prevent dual bleps at same increment */
+    static_cast<uint16_t>(127 + parameter_) << 8 :
+    static_cast<uint16_t>(127 + pwm_limit) << 8;
+  uint8_t high = phase_.integral >= pwm_phase;
+  
+  uint8_t next_sample = data_.output_sample;
+  BEGIN_SAMPLE_LOOP
+    UPDATE_PHASE
+    uint8_t this_sample = next_sample;
+
+    // Compute naive waveform
+    next_sample = revert_to_saw ? 
+      (phase.integral >> 8) : (phase.integral < pwm_phase ? 0 : 255);
+
+    if (phase.carry) {
+      high = false;
+      CALCULATE_BLEP_INDEX(phase.integral, quotient, quotient_shifts, blep_index)
+      this_sample -= ResourcesManager::Lookup<uint8_t, uint8_t>(
+        wav_res_blep_table, blep_index);
+      next_sample += ResourcesManager::Lookup<uint8_t, uint8_t>(
+        wav_res_blep_table, 127-blep_index);
+    }
+    else if (!revert_to_saw && /* no positive edge for pure saw */
+      phase.integral >= pwm_phase && !high) {
+      high = true;
+      CALCULATE_BLEP_INDEX(phase.integral-pwm_phase, quotient, quotient_shifts, blep_index)
+      this_sample += ResourcesManager::Lookup<uint8_t, uint8_t>(
+        wav_res_blep_table, blep_index);
+      next_sample -= ResourcesManager::Lookup<uint8_t, uint8_t>(
+        wav_res_blep_table, 127-blep_index);
+    }
+
+    *buffer++ = this_sample;
+  END_SAMPLE_LOOP
+
+  data_.output_sample = next_sample;
+}
+
 // ------- Quad Pwm (mit aliasing) -------------------------------------------
 void Oscillator::RenderQuadPwm(uint8_t* buffer) {
   uint16_t phase_spread = (
@@ -502,8 +583,8 @@ void Oscillator::RenderWavequence(uint8_t* buffer) {
 const Oscillator::RenderFn Oscillator::fn_table_[] PROGMEM = {
   &Oscillator::RenderSilence,
 
-  &Oscillator::RenderSimpleWavetable,
-  &Oscillator::RenderBandlimitedPwm,
+  &Oscillator::RenderPolyBlepSaw,
+  &Oscillator::RenderPolyBlepPwm,
   &Oscillator::RenderNewTriangle,
   &Oscillator::RenderSimpleWavetable,
 
@@ -527,6 +608,7 @@ const Oscillator::RenderFn Oscillator::fn_table_[] PROGMEM = {
   &Oscillator::RenderFilteredNoise,
   &Oscillator::RenderVowel,
   
+  &Oscillator::RenderSimpleWavetable,
   &Oscillator::RenderQuadPwm,
   &Oscillator::RenderFm,
   

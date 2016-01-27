@@ -38,8 +38,8 @@ static const prog_uint16_t lfo_phase_increment_per_clock_tick[15] PROGMEM = {
 
 static const prog_Patch init_patch PROGMEM = {
   // Oscillators
-  WAVEFORM_SAW, 0, 0, 0,
-  WAVEFORM_SQUARE, 32, -12, 12,
+  WAVEFORM_POLYBLEP_SAW, 0, 0, 0,
+  WAVEFORM_POLYBLEP_PWM, 32, -12, 12,
   
   // Mixer
   32, OP_SUM, 31, WAVEFORM_SUB_OSC_SQUARE_1, 0, 0, 0, 0, 

@@ -90,7 +90,6 @@ sine = -numpy.sin(numpy.arange(WAVETABLE_SIZE + 1) / float(WAVETABLE_SIZE) * 2 *
 # Band limited waveforms.
 num_zones = (107 - 24) / 16 + 2
 bl_pulse_tables = []
-bl_square_tables = []
 bl_saw_tables = []
 
 wrap = numpy.fmod(numpy.arange(WAVETABLE_SIZE + 1) + WAVETABLE_SIZE / 2, WAVETABLE_SIZE)
@@ -108,15 +107,6 @@ for zone in range(num_zones):
   pulse = numpy.sin(numpy.pi * i * m) / (m * numpy.sin(numpy.pi * i) + 1e-9)
   pulse[WAVETABLE_SIZE / 2] = 1.0
   pulse = pulse[fill]
-
-  square = numpy.cumsum(pulse - pulse[wrap])
-  triangle = -numpy.cumsum(square[::-1] - square.mean()) / WAVETABLE_SIZE
-
-  square -= JUNINESS * triangle
-  if zone == num_zones - 1:
-    square = sine
-  bl_square_tables.append(('bandlimited_square_%d' % zone,
-                          Scale(square[quadrature])))
 
   saw = -numpy.cumsum(pulse[wrap] - pulse.mean())
   saw -= JUNINESS * numpy.cumsum(saw - saw.mean()) / WAVETABLE_SIZE
@@ -142,7 +132,6 @@ def LoadWavetable(x):
 
 
 waveforms.extend(bl_pulse_tables)
-waveforms.extend(bl_square_tables)
 waveforms.extend(bl_saw_tables)
 
 
@@ -197,6 +186,24 @@ waveforms.append(('env_expo', env_expo / env_expo.max() * 255))
 # pylab.plot(env_expo / env_expo.max() * 255)
 # pylab.savefig('foo.pdf')
 
+"""----------------------------------------------------------------------------
+Create table of x^-1 used for crude division calculations
+----------------------------------------------------------------------------"""
+quotients = numpy.arange(256, 512, 2)
+divisions = 65535.0 / quotients;
+divisions = divisions.astype(int)
+waveforms.append(
+    ('division_table', divisions)
+)
+
+"""----------------------------------------------------------------------------
+Create table of x^2 used in polyblep calculations
+----------------------------------------------------------------------------"""
+bleptable = numpy.linspace(0.0, 1.0, 128) ** 2.0
+bleptable = numpy.round(127*bleptable).astype(int)
+waveforms.append(
+    ('blep_table', bleptable)
+)
 
 """----------------------------------------------------------------------------
 Wavetables
