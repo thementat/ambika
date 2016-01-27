@@ -25,5 +25,8 @@
 *.log
 *.aux
 
+# Built files
+/build
+
 # OS X crap
 .DS_Stor?
