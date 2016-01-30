@@ -21,7 +21,7 @@
 // make resources
 
 
-#include "controller/resources.h"
+#include "controller\resources.h"
 
 namespace ambika {
 
@@ -118,6 +118,9 @@ static const prog_char str_res_8bits[] PROGMEM = "8bits";
 static const prog_char str_res_pwm[] PROGMEM = "pwm";
 static const prog_char str_res_noise[] PROGMEM = "noise";
 static const prog_char str_res_vowel[] PROGMEM = "vowel";
+static const prog_char str_res_oldsaw[] PROGMEM = "oldsaw";
+static const prog_char str_res_qpwm[] PROGMEM = "qpwm";
+static const prog_char str_res_fmfb[] PROGMEM = "fmfb";
 static const prog_char str_res_male[] PROGMEM = "male";
 static const prog_char str_res_female[] PROGMEM = "female";
 static const prog_char str_res_choir[] PROGMEM = "choir";
@@ -470,6 +473,9 @@ PROGMEM const prog_char* const string_table[] = {
   str_res_pwm,
   str_res_noise,
   str_res_vowel,
+  str_res_oldsaw,
+  str_res_qpwm,
+  str_res_fmfb,
   str_res_male,
   str_res_female,
   str_res_choir,
