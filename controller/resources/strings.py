@@ -116,9 +116,6 @@ fm
 pwm
 noise
 vowel
-oldsaw
-qpwm
-fmfb
 male
 female
 choir
@@ -136,6 +133,9 @@ drone 2
 metallic
 bell
 wavquence
+oldsaw
+qpwm
+fmfb
 
 tri
 sqr

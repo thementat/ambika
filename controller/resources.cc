@@ -118,9 +118,6 @@ static const prog_char str_res_8bits[] PROGMEM = "8bits";
 static const prog_char str_res_pwm[] PROGMEM = "pwm";
 static const prog_char str_res_noise[] PROGMEM = "noise";
 static const prog_char str_res_vowel[] PROGMEM = "vowel";
-static const prog_char str_res_oldsaw[] PROGMEM = "oldsaw";
-static const prog_char str_res_qpwm[] PROGMEM = "qpwm";
-static const prog_char str_res_fmfb[] PROGMEM = "fmfb";
 static const prog_char str_res_male[] PROGMEM = "male";
 static const prog_char str_res_female[] PROGMEM = "female";
 static const prog_char str_res_choir[] PROGMEM = "choir";
@@ -138,6 +135,9 @@ static const prog_char str_res_drone_2[] PROGMEM = "drone 2";
 static const prog_char str_res_metallic[] PROGMEM = "metallic";
 static const prog_char str_res_bell[] PROGMEM = "bell";
 static const prog_char str_res_wavquence[] PROGMEM = "wavquence";
+static const prog_char str_res_oldsaw[] PROGMEM = "oldsaw";
+static const prog_char str_res_qpwm[] PROGMEM = "qpwm";
+static const prog_char str_res_fmfb[] PROGMEM = "fmfb";
 static const prog_char str_res_tri[] PROGMEM = "tri";
 static const prog_char str_res_sqr[] PROGMEM = "sqr";
 static const prog_char str_res_s_h[] PROGMEM = "s&h";
@@ -473,9 +473,6 @@ PROGMEM const prog_char* const string_table[] = {
   str_res_pwm,
   str_res_noise,
   str_res_vowel,
-  str_res_oldsaw,
-  str_res_qpwm,
-  str_res_fmfb,
   str_res_male,
   str_res_female,
   str_res_choir,
@@ -493,6 +490,9 @@ PROGMEM const prog_char* const string_table[] = {
   str_res_metallic,
   str_res_bell,
   str_res_wavquence,
+  str_res_oldsaw,
+  str_res_qpwm,
+  str_res_fmfb,
   str_res_tri,
   str_res_sqr,
   str_res_s_h,

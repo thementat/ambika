@@ -608,11 +608,11 @@ const Oscillator::RenderFn Oscillator::fn_table_[] PROGMEM = {
   &Oscillator::RenderFilteredNoise,
   &Oscillator::RenderVowel,
   
+  &Oscillator::RenderInterpolatedWavetable,
+  
   &Oscillator::RenderSimpleWavetable,
   &Oscillator::RenderQuadPwm,
-  &Oscillator::RenderFm,
-  
-  &Oscillator::RenderInterpolatedWavetable
+  &Oscillator::RenderFm
 };
 
 }  // namespace

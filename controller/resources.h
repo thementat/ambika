@@ -178,26 +178,26 @@ extern const prog_uint8_t wav_res_lfo_waveforms[] PROGMEM;
 #define STR_RES_PWM 91  // pwm
 #define STR_RES_NOISE 92  // noise
 #define STR_RES_VOWEL 93  // vowel
-#define STR_RES_OLDSAW 94  // oldsaw
-#define STR_RES_QPWM 95  // qpwm
-#define STR_RES_FMFB 96  // fmfb
-#define STR_RES_MALE 97  // male
-#define STR_RES_FEMALE 98  // female
-#define STR_RES_CHOIR 99  // choir
-#define STR_RES_TAMPURA 100  // tampura
-#define STR_RES_BOWED 101  // bowed
-#define STR_RES_CELLO 102  // cello
-#define STR_RES_VIBES 103  // vibes
-#define STR_RES_SLAP 104  // slap
-#define STR_RES_EPIANO 105  // epiano
-#define STR_RES_ORGAN 106  // organ
-#define STR_RES_WAVES 107  // waves
-#define STR_RES_DIGITAL 108  // digital
-#define STR_RES_DRONE_1 109  // drone 1
-#define STR_RES_DRONE_2 110  // drone 2
-#define STR_RES_METALLIC 111  // metallic
-#define STR_RES_BELL 112  // bell
-#define STR_RES_WAVQUENCE 113  // wavquence
+#define STR_RES_MALE 94  // male
+#define STR_RES_FEMALE 95  // female
+#define STR_RES_CHOIR 96  // choir
+#define STR_RES_TAMPURA 97  // tampura
+#define STR_RES_BOWED 98  // bowed
+#define STR_RES_CELLO 99  // cello
+#define STR_RES_VIBES 100  // vibes
+#define STR_RES_SLAP 101  // slap
+#define STR_RES_EPIANO 102  // epiano
+#define STR_RES_ORGAN 103  // organ
+#define STR_RES_WAVES 104  // waves
+#define STR_RES_DIGITAL 105  // digital
+#define STR_RES_DRONE_1 106  // drone 1
+#define STR_RES_DRONE_2 107  // drone 2
+#define STR_RES_METALLIC 108  // metallic
+#define STR_RES_BELL 109  // bell
+#define STR_RES_WAVQUENCE 110  // wavquence
+#define STR_RES_OLDSAW 111  // oldsaw
+#define STR_RES_QPWM 112  // qpwm
+#define STR_RES_FMFB 113  // fmfb
 #define STR_RES_TRI 114  // tri
 #define STR_RES_SQR 115  // sqr
 #define STR_RES_S_H 116  // s&h
