@@ -138,6 +138,7 @@ static const prog_char str_res_wavquence[] PROGMEM = "wavquence";
 static const prog_char str_res_oldsaw[] PROGMEM = "oldsaw";
 static const prog_char str_res_qpwm[] PROGMEM = "qpwm";
 static const prog_char str_res_fmfb[] PROGMEM = "fmfb";
+static const prog_char str_res_csaw[] PROGMEM = "csaw";
 static const prog_char str_res_tri[] PROGMEM = "tri";
 static const prog_char str_res_sqr[] PROGMEM = "sqr";
 static const prog_char str_res_s_h[] PROGMEM = "s&h";
@@ -493,6 +494,7 @@ PROGMEM const prog_char* const string_table[] = {
   str_res_oldsaw,
   str_res_qpwm,
   str_res_fmfb,
+  str_res_csaw,
   str_res_tri,
   str_res_sqr,
   str_res_s_h,

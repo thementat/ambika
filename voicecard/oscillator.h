@@ -165,6 +165,7 @@ class Oscillator {
   void RenderNewTriangle(uint8_t* buffer);
   void RenderDirtyPwm(uint8_t* buffer);
   void RenderPolyBlepSaw(uint8_t* buffer);
+  void RenderPolyBlepCSaw(uint8_t* buffer);
   void RenderPolyBlepPwm(uint8_t* buffer);
   void RenderQuad(uint8_t* buffer);
   void RenderFilteredNoise(uint8_t* buffer);
