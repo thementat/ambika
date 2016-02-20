@@ -215,14 +215,8 @@ void Oscillator::RenderCzResoTri(uint8_t* buffer) {
 
 // ------- FM ----------------------------------------------------------------
 void Oscillator::RenderFm(uint8_t* buffer) {
-  uint8_t offset = fm_parameter_;
-  if (offset < 24) {
-    offset = 0;
-  } else if (offset > 48) {
-    offset = 24;
-  } else {
-    offset = offset - 24;
-  }
+  uint8_t offset = fm_parameter_ < 24 ? 0 : 
+    (fm_parameter_ > 48 ? 24 : fm_parameter_-24);
   uint16_t multiplier = ResourcesManager::Lookup<uint16_t, uint8_t>(
       lut_res_fm_frequency_ratios, offset);
   uint16_t increment = (
@@ -236,7 +230,7 @@ void Oscillator::RenderFm(uint8_t* buffer) {
   BEGIN_SAMPLE_LOOP
     UPDATE_PHASE
     phase_2 += increment;
-    uint8_t modulator = InterpolateSample(wav_res_sine,
+    uint8_t modulator = ReadSample(wav_res_sine,
         phase_2 + fb_phase_mod*last_output);
     uint16_t modulation = modulator * parameter_;
     last_output = InterpolateSample(wav_res_sine,
@@ -528,16 +522,16 @@ void Oscillator::RenderQuad(uint8_t* buffer) {
     END_SAMPLE_LOOP
   }
   else { // WAVEFORM_QUAD_PWM
-    uint16_t pwm_phase = static_cast<uint16_t>(127 + parameter_) << 8;
+    uint8_t pwm_phase = 127 + parameter_;
     BEGIN_SAMPLE_LOOP
       UPDATE_PHASE
       data_.qs.phase[0] += increments[0];
       data_.qs.phase[1] += increments[1];
       data_.qs.phase[2] += increments[2];
-      uint8_t value = phase.integral < pwm_phase ? 0 : 63;
-      value += data_.qs.phase[0] < pwm_phase ? 0 : 63;
-      value += data_.qs.phase[1] < pwm_phase ? 0 : 63;
-      value += data_.qs.phase[2] < pwm_phase ? 0 : 63;
+      uint8_t value = phase.integral < (pwm_phase << 8) ? 0 : 63;
+      if (data_.qsbytes[1] >= pwm_phase) value += 63;
+      if (data_.qsbytes[3] >= pwm_phase) value += 63;
+      if (data_.qsbytes[5] >= pwm_phase) value += 63;
       *buffer++ = value;
     END_SAMPLE_LOOP
   }

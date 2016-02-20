@@ -67,14 +67,15 @@ struct FilteredNoiseState {
   uint16_t rng_reset_value;
 };
 
-struct QuadSawPadState {
+struct QuadState {
   uint16_t phase[3];
 };
 
 union OscillatorState {
   VowelSynthesizerState vw;
   FilteredNoiseState no;
-  QuadSawPadState qs;
+  QuadState qs;
+  uint8_t qsbytes[6];
   uint16_t secondary_phase;
   uint8_t output_sample;
 };
