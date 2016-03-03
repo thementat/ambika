@@ -169,6 +169,7 @@ uint8_t ParameterEditor::OnPot(uint8_t index, uint8_t value) {
 
 /* static */
 void ParameterEditor::UpdateScreen() {
+  uint8_t paramLength = 0;
   uint8_t detailed_info_line = 2;
   // If we are in editing mode, draw the detailed information for the edited
   // parameter. Disable this detailed information when "help" is set to off.
@@ -222,13 +223,19 @@ void ParameterEditor::UpdateScreen() {
       if (parameter.level == PARAMETER_LEVEL_UI) {
         // Use up to 6 letters for page names.
         parameter.Print(value, &buffer[1], 6, 2);
+        paramLength = 6;
       } else {
         // Use up to 4 letters for ordinary parameters names.
         parameter.Print(value, &buffer[1], 4, 4);
+        paramLength = 4;
       }
-      if (i == active_control_ && buffer[1] >= 'a' && buffer[1] <= 'z') {
-        // Change the first letter of the active control to uppercase.
-        buffer[1] -= 0x20;
+      if (i == active_control_) {
+        // phase57 mod: make the whole parameter name uppercase.
+        for (uint8_t c = 1; c < paramLength+1 ; ++c) {
+          if (buffer[c] >= 'a' && buffer[c] <= 'z') {
+            buffer[c] -= 0x20;
+          }
+        }
       }
     }
   }
