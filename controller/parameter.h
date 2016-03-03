@@ -117,7 +117,7 @@ struct Parameter {
   static void PrintNote(uint8_t note, char* buffer);
 };
 
-const uint8_t kNumParameters = 73;
+const uint8_t kNumParameters = 75;
 typedef Parameter PROGMEM prog_Parameter;
 
 // The parameter manager is the class who knows how to apply a parameter change

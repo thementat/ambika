@@ -293,7 +293,7 @@ static const prog_char midi_cc_map[128] PROGMEM = {
     28,  25, 255,  26, 255, 255,  44,  45,
    // 96-111
    255, 255, 255, 255, 255, 255,  49,  50,
-    51,  52,  53,  57, 255, 255, 255, 255,
+    51,  52,  53,  57,  73,  74, 255, 255,
    // 112-127
    255, 255, 255, 255, 255, 255, 255, 255,
    255, 255, 255, 255, 255, 255, 255, 255
@@ -320,7 +320,7 @@ static const prog_char midi_nrpn_map[256] PROGMEM = {
     37,  35,  36,  37,  39,  40,  41,  39,
    // 96-111
     40,  41,  39,  40,  41,  39,  40,  41,
-   255, 255, 255, 255, 255, 255, 255, 255,
+    73,  74, 255, 255, 255, 255, 255, 255,
    // 112-127
    42,  43,  44,  45,  46,  47,  48,  49,
    50,  51,  52,  53,  54,  55,  56,  57,
@@ -865,6 +865,20 @@ static const prog_Parameter parameters[kNumParameters] PROGMEM = {
     UNIT_BOOLEAN, 0, 1,
     1, 0, 0xff, 0xff,
     STR_RES_SWAP_COLORS, STR_RES_SWAP_COLORS, STR_RES_SYSTEM },
+  	
+  // 73
+  { PARAMETER_LEVEL_PATCH,
+    PRM_PATCH_FILTER1_VELO,
+    UNIT_UINT8, 0, 63,
+    1, 0, 0xff, 108,
+    STR_RES_VELOTVCF, STR_RES_VELOTVCF, STR_RES_FILTER_1 },
+  
+  // 74
+  { PARAMETER_LEVEL_PATCH,
+    PRM_PATCH_FILTER1_KBT,
+    UNIT_INT8, -63, 63,
+    1, 0, 0xff, 109,
+    STR_RES_KEYBTVCF, STR_RES_KEYBTVCF, STR_RES_FILTER_1 },
 };
 
 /* static */

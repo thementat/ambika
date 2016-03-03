@@ -38,6 +38,8 @@ static const prog_char str_res_resonance[] PROGMEM = "resonance";
 static const prog_char str_res_mode[] PROGMEM = "mode";
 static const prog_char str_res_env2Tvcf[] PROGMEM = "env2~vcf";
 static const prog_char str_res_lfo2Tvcf[] PROGMEM = "lfo2~vcf";
+static const prog_char str_res_veloTvcf[] PROGMEM = "velo~vcf";
+static const prog_char str_res_keybTvcf[] PROGMEM = "keyb~vcf";
 static const prog_char str_res_attack[] PROGMEM = "attack";
 static const prog_char str_res_decay[] PROGMEM = "decay";
 static const prog_char str_res_sustain[] PROGMEM = "sustain";
@@ -393,6 +395,8 @@ PROGMEM const prog_char* const string_table[] = {
   str_res_mode,
   str_res_env2Tvcf,
   str_res_lfo2Tvcf,
+  str_res_veloTvcf,
+  str_res_keybTvcf,
   str_res_attack,
   str_res_decay,
   str_res_sustain,

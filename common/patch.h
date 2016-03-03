@@ -279,8 +279,12 @@ struct Patch {
   // Offset: 92-104
   Modifier modifier[kNumModifiers];
   
-  // Offset: 104-112
-  uint8_t padding[8];
+  // Offset: 104-106
+  int8_t filter_velo;
+  int8_t filter_kbt;
+  
+  // Offset: 106-112
+  uint8_t padding[6];
 };
 
 typedef Patch PROGMEM prog_Patch;
@@ -331,7 +335,10 @@ enum PatchParameter {
   
   PRM_PATCH_MOD_OPERAND1 = 92,
   PRM_PATCH_MOD_OPERAND2,
-  PRM_PATCH_MOD_OPERATOR
+  PRM_PATCH_MOD_OPERATOR,
+  
+  PRM_PATCH_FILTER1_VELO = 104,
+  PRM_PATCH_FILTER1_KBT
 };
 
 }  // namespace ambika
