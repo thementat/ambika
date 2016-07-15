@@ -326,8 +326,13 @@ inline void Voice::UpdateDestinations() {
   
   // Store in memory all the updated parameters.
   modulation_destinations_[MOD_DST_FILTER_CUTOFF] = U14ShiftRight6(cutoff);
+#ifdef POLIVOKS_FILTERBOARD
+  modulation_destinations_[MOD_DST_FILTER_RESONANCE] = U14ShiftRight6(16383-
+      dst_[MOD_DST_FILTER_RESONANCE]);
+#else
   modulation_destinations_[MOD_DST_FILTER_RESONANCE] = U14ShiftRight6(
       dst_[MOD_DST_FILTER_RESONANCE]);
+#endif
   modulation_destinations_[MOD_DST_MIX_CRUSH] = (
       dst_[MOD_DST_MIX_CRUSH] >> 8) + 1;
 
