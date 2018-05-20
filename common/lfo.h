@@ -71,10 +71,8 @@ class Lfo {
 #ifndef DISABLE_WAVETABLE_LFOS
       default:
         {
-          uint8_t shape_offset = shape - LFO_WAVEFORM_WAVE_1;
-          uint16_t offset = static_cast<uint16_t>(shape_offset) << 8;
-          offset += shape_offset;
-          value = InterpolateSample(wav_res_lfo_waveforms + offset, phase_);
+          uint16_t offset = avrlib::U8U8Mul(shape - LFO_WAVEFORM_WAVE_1, 129);
+          value = InterpolateSample(wav_res_lfo_waveforms + offset, phase_ >> 1);
         }
         break;
 #endif  // DISABLE_WAVETABLE_LFOS
