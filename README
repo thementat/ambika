@@ -18,7 +18,7 @@ Here's a short summary of changes _compared_ to official Ambika firmware:
 
 * Added a 'csaw' Polyblep oscillator rather similar to the CS-80 inspired saw oscillator for Braids. Without modulation it's a plain saw (identical to 'saw'). Modulation adds a 'notch' discontinuity before the ramp.
 
-* Ported phase57 mods for velocity and keyboard tracking to filter page and CC & NRPN assignments (108 and 109 respectively). Also, the active editing parameter is displayed in all uppercase characters. (http://blog.phase57.com/index.php/ambika/code for more details.) 
+* Ported phase57 mods for velocity and keyboard tracking to filter page and CC & NRPN assignments (104 and 105 respectively). Also, the active editing parameter is displayed in all uppercase characters. (http://blog.phase57.com/index.php/ambika/code for more details.) 
 
 NOTES ON PATCH (PROGRAM) COMPATIBILITY with official Ambika firmware: 
 Due to qualitative differences of the 'saw' and 'square' oscillators etc, levels may have to be adjusted somewhat to mimic original patches. If you really miss the original saw oscillator from the official firmware, this one is still available as 'oldsaw' (it's high-pass sampled and have a different character). In order to maximize patch (actually program) backwards compatibility, the added oscillators are put at the end of the oscillator selection (even though this means fmfb is not next to fm etc).
