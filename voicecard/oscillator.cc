@@ -283,7 +283,8 @@ void Oscillator::RenderVowel(uint8_t* buffer) {
     }
   }
   
-  int16_t phase_noise = S8S8Mul(Random::state_msb(), data_.vw.noise_modulation);
+  int16_t phase_noise = (shape_ == WAVEFORM_VOWEL) ? 
+    S8S8Mul(Random::state_msb(), data_.vw.noise_modulation) : 0;
   BEGIN_SAMPLE_LOOP
     int8_t result = 0;
     uint8_t phaselet;
@@ -650,7 +651,8 @@ const Oscillator::RenderFn Oscillator::fn_table_[] PROGMEM = {
   &Oscillator::RenderSimpleWavetable,
   &Oscillator::RenderQuad,
   &Oscillator::RenderFm,
-  &Oscillator::RenderPolyBlepCSaw
+  &Oscillator::RenderPolyBlepCSaw,
+  &Oscillator::RenderVowel
 };
 
 }  // namespace

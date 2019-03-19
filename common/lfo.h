@@ -72,7 +72,13 @@ class Lfo {
       default:
         {
           uint16_t offset = avrlib::U8U8Mul(shape - LFO_WAVEFORM_WAVE_1, 129);
-          value = InterpolateSample(wav_res_lfo_waveforms + offset, phase_ >> 1);
+          const prog_uint8_t* wave = wav_res_lfo_waveforms + offset;
+          if (shape < LFO_WAVEFORM_WAVE_15) {
+            value = InterpolateSample(wave, phase_ >> 1);
+          }
+          else { // hack to avoid interpolation of the 'steppy' lfo waveforms
+            value = pgm_read_byte(wave + (phase_ >> 9));
+          }
         }
         break;
 #endif  // DISABLE_WAVETABLE_LFOS
