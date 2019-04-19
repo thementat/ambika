@@ -1,6 +1,6 @@
-// Copyright 2012 Olivier Gillet.
+// Copyright 2012 Emilie Gillet.
 //
-// Author: Olivier Gillet (ol.gillet@gmail.com)
+// Author: Emilie Gillet (emilie.o.gillet@gmail.com)
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -191,7 +191,7 @@ void Oscillator::RenderCzResoPulse(uint8_t* buffer) {
 void Oscillator::RenderCzResoTri(uint8_t* buffer) {
   uint16_t increment = phase_increment_.integral + (
       (phase_increment_.integral * uint32_t(parameter_)) >> 2);
-  uint8_t type = shape_ - WAVEFORM_CZ_SAW_LP; //BER:TODO: Explore these latent oscillator variations left out by Olivier
+  uint8_t type = shape_ - WAVEFORM_CZ_SAW_LP; //BER:TODO: Explore these latent oscillator variations left out by Emilie
   uint16_t phase_2 = data_.secondary_phase;
   BEGIN_SAMPLE_LOOP
     UPDATE_PHASE
@@ -343,7 +343,7 @@ void Oscillator::RenderDirtyPwm(uint8_t* buffer) {
 }
 
 // ------- Polyblep Saw ------------------------------------------------------
-// Heavily inspired by Oliviers experimental implementation for STM but
+// Heavily inspired by Emilies experimental implementation for STM but
 // dumbed down and much less generic (does not do polyblep for sync etc)
 void Oscillator::RenderPolyBlepSaw(uint8_t* buffer) {
   
@@ -392,7 +392,7 @@ void Oscillator::RenderPolyBlepSaw(uint8_t* buffer) {
 }
 
 // ------- Polyblep CS-80 Saw ------------------------------------------------
-// Heavily inspired by Oliviers experimental implementation for STM but
+// Heavily inspired by Emilies experimental implementation for STM but
 // dumbed down and much less generic (does not do polyblep for sync etc)
 void Oscillator::RenderPolyBlepCSaw(uint8_t* buffer) {
 
@@ -446,7 +446,7 @@ void Oscillator::RenderPolyBlepCSaw(uint8_t* buffer) {
 }
 
 // ------- Polyblep Pwm ------------------------------------------------------
-// Heavily inspired by Oliviers experimental implementation for STM but
+// Heavily inspired by Emilies experimental implementation for STM but
 // dumbed down and much less generic (does not do polyblep for sync etc)
 void Oscillator::RenderPolyBlepPwm(uint8_t* buffer) {
 

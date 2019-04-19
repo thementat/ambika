@@ -4,7 +4,7 @@ This is a project for an alternative firmware for Ambika, a hybrid MIDI polysynt
 
 Here's a short summary of changes _compared_ to official Ambika firmware:
 
-* PolyBlep implementations replace the original band-limited 'saw' and 'square' oscillators for higher fidelity and less memory footprint (Polyblep implementation inspired by, but less general than, Oliviers prototype for STM). 
+* PolyBlep implementations replace the original band-limited 'saw' and 'square' oscillators for higher fidelity and less memory footprint (Polyblep implementation inspired by, but less general than, Emilies prototype for STM). 
 
 * 'square' is now a Polyblep oscillator with more proper sounding PWM, i.e. more edginess, and no loudness drop for PWM modulation parameter above 0. 
 
@@ -27,7 +27,7 @@ Due to qualitative differences of the 'saw' and 'square' oscillators etc, levels
 
 This repository was originally a copy of the Mutable Instruments GitHub Ambika repository at https://github.com/pichenettes/ambika
  
-Original developer: Olivier Gillet (olivier@mutable-instruments.net)
+Original developer: Emilie Gillet (emilie.o.gillet@gmail.com)
 
 The firmware is released under a GPL3.0 license. It includes a variant of the formant synthesis algorithm used in Peter Knight's Cantarino speech synthesizer.
 
