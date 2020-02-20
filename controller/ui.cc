@@ -40,80 +40,80 @@
 #include "controller/voicecard_tx.h"
 
 namespace ambika {
-  
+
 const prog_PageInfo page_registry[] PROGMEM = {
   { PAGE_OSCILLATORS,
     &ParameterEditor::event_handlers_,
     { 0, 1, 2, 3, 4, 5, 6, 7 },
     PAGE_MIXER, 0, 0xf0,
   },
-  
+
   { PAGE_MIXER,
     &ParameterEditor::event_handlers_,
     { 8, 13, 12, 11, 9, 10, 14, 15 },
     PAGE_OSCILLATORS, 0, 0x0f,
   },
-  
+
   { PAGE_FILTER,
     &ParameterEditor::event_handlers_,
     { 16, 17, 0xff, 18, 22, 23, 73, 74 },
     PAGE_FILTER, 1, 0xf0,
   },
-  
+
   { PAGE_ENV_LFO,
     &ParameterEditor::event_handlers_,
     { 24, 30, 31, 29, 25, 26, 27, 28 },
     PAGE_VOICE_LFO, 2, 0xf0,
   },
-  
+
   { PAGE_VOICE_LFO,
     &ParameterEditor::event_handlers_,
     { 0xff, 32, 33, 0xff, 0xff, 0xff, 0xff, 0xff },
     PAGE_ENV_LFO, 2, 0x0f,
   },
-  
+
   { PAGE_MODULATIONS,
     &ParameterEditor::event_handlers_,
     { 34, 35, 36, 37, 38, 39, 40, 41 },
     PAGE_MODULATIONS, 3, 0xf0,
   },
-  
+
   { PAGE_PART,
     &ParameterEditor::event_handlers_,
     { 42, 57, 47, 48, 43, 44, 45, 46 },
     PAGE_PART_ARPEGGIATOR, 4, 0xf0,
   },
-  
+
   { PAGE_PART_ARPEGGIATOR,
     &ParameterEditor::event_handlers_,
     { 49, 50, 51, 52, 53, 54, 55, 56 },
     PAGE_PART_SEQUENCER, 4, 0x0f,
   },
-  
+
   { PAGE_PART_SEQUENCER,
     &SequenceEditor::event_handlers_,
     { 0, 0, 0, 0, 0, 0, 0, 0 },
     PAGE_PART, 4, 0xff,
   },
-  
+
   { PAGE_MULTI,
     &VoiceAssigner::event_handlers_,
     { 58, 59, 60, 61, 0xff, 0xff, 0xff, 0xff },
     PAGE_MULTI_CLOCK, 5, 0xf0,
   },
-  
+
   { PAGE_MULTI_CLOCK,
     &ParameterEditor::event_handlers_,
-    { 62, 63, 64, 65, 0xff, 0xff, 0xff, 0xff, },
+    { 75, 76, 77, 0xff, 62, 63, 64, 65, },
     PAGE_MULTI, 5, 0x0f,
   },
-  
+
   { PAGE_PERFORMANCE,
     &PerformancePage::event_handlers_,
     { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, },
     PAGE_KNOB_ASSIGN, 6, 0xf0,
   },
-  
+
   { PAGE_KNOB_ASSIGN,
     &KnobAssigner::event_handlers_,
     { 0, 0, 0, 0, 0, 0, 0, 0, },
@@ -192,9 +192,9 @@ void Ui::Init() {
   display.Init();
   leds.Init();
   lcd.SetCustomCharMapRes(character_table[0], 7, 1);
-  
+
   ShowPage(PAGE_FILTER);
-  
+
   memset(line, ' ', 41);
   line[40] = '\0';
   inhibit_switch_ = 0;
@@ -220,7 +220,7 @@ void Ui::Poll() {
   if (encoder_.clicked()) {
     queue_.AddEvent(CONTROL_ENCODER_CLICK, 0, 1);
   }
-  
+
   if (!(cycle_ & 31)) {
     switches_.Read();
     uint8_t mask = 1;
@@ -241,11 +241,11 @@ void Ui::Poll() {
       mask <<= 1;
     }
   }
-  
+
   if (!(cycle_ & 7)) {
     display.BlinkCursor();
   }
-  
+
   pots_.Read();
   uint8_t index = pots_.last_read();
   uint16_t value = pots_.value(index);
@@ -257,7 +257,7 @@ void Ui::Poll() {
     }
     queue_.AddEvent(CONTROL_POT, index, value);
   }
-  
+
   if (voicecard_tx.sd_card_busy()) {
     display.ForceStatus(0xdb);
     leds.set_direct_pixel(LED_STATUS, 0x0f);
@@ -272,9 +272,9 @@ void Ui::Poll() {
 void Ui::ShowPageRelative(int8_t increment) {
   // Disable page scrolling for the system pages.
   if (page_info_.index >= PAGE_LIBRARY) {
-    return; 
+    return;
   }
-  
+
   int8_t current_page = page_info_.index;
   current_page += increment;
   if (current_page < 0) {
@@ -297,7 +297,7 @@ const prog_uint8_t part_leds_remap[] PROGMEM = { 0, 3, 1, 4, 2, 5 };
 /* static */
 void Ui::DoEvents() {
   display.Tick();
-  
+
   uint8_t redraw = 0;
   while (queue_.available()) {
     Event e = queue_.PullEvent();
@@ -311,7 +311,7 @@ void Ui::DoEvents() {
       case CONTROL_ENCODER_CLICK:
         (*event_handlers_.OnClick)();
         break;
-        
+
       case CONTROL_ENCODER:
         if (e.control_id == 0) {
           (*event_handlers_.OnIncrement)(e.value);
@@ -321,7 +321,7 @@ void Ui::DoEvents() {
           state_.active_part = new_part;
         }
         break;
-        
+
       case CONTROL_SWITCH:
         if (!(*event_handlers_.OnKey)(e.control_id)) {
           // Cycle through the next page in the group.
@@ -333,25 +333,25 @@ void Ui::DoEvents() {
           }
         }
         break;
-        
+
       case CONTROL_POT:
         (*event_handlers_.OnPot)(e.control_id, e.value);
         break;
     }
   }
-  
+
   if (queue_.idle_time_ms() > 800) {
     queue_.Touch();
     if ((*event_handlers_.OnIdle)()) {
       redraw = 1;
     }
   }
-  
+
   if (multi.flags() & FLAG_HAS_CHANGE) {
     redraw = 1;
     multi.ClearFlag(FLAG_HAS_CHANGE);
   }
-  
+
   if (redraw) {
     display.Clear();
     // The status icon is displayed when there is blank space at the left/right
@@ -359,11 +359,11 @@ void Ui::DoEvents() {
     // right side of the page, so we fill the last character of the first line
     // with an invisible, non-space character.
     display.line_buffer(0)[39] = '\xfe';
-    
+
     display.set_cursor_position(kLcdNoCursor);
     (*event_handlers_.UpdateScreen)();
   }
-  
+
   leds.Clear();
   leds.set_pixel(
       LED_PART_1 + pgm_read_byte(part_leds_remap + state_.active_part), 0xf0);
@@ -389,7 +389,7 @@ void Ui::ShowPage(UiPageNumber page, uint8_t initialize) {
   queue_.Flush();
   queue_.Touch();
   pots_.Lock(16);
-  
+
   if (page <= PAGE_KNOB_ASSIGN) {
     most_recent_non_system_page_ = page;
   }
@@ -412,7 +412,7 @@ void Ui::ShowDialogBox(uint8_t dialog_id, Dialog dialog, uint8_t choice) {
   // Flush the event queue.
   queue_.Flush();
   queue_.Touch();
-  
+
   // Replace the current page by the dialog box handler.
   ResourcesManager::Load(&DialogBox::event_handlers_, 0, &event_handlers_);
   page_info_.dialog = dialog;

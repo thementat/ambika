@@ -466,6 +466,12 @@ extern const prog_uint8_t wav_res_lfo_waveforms[] PROGMEM;
 #define STR_RES_KAUSHIK_TODI 379  // kaushik todi
 #define STR_RES_JOGESHWARI 380  // jogeshwari
 #define STR_RES_RASIA 381  // rasia
+#define STR_RES_MPE 382  // mpe
+#define STR_RES_MPE_ENABLED 383  // mpe enabled
+#define STR_RES_CHNS 384  // chns
+#define STR_RES_MEMBER_CHANNELS 385  // member channels
+#define STR_RES_BRNG 386  // brng
+#define STR_RES_BEND_RANGE 387  // bend range
 #define LUT_RES_LFO_INCREMENTS 0
 #define LUT_RES_LFO_INCREMENTS_SIZE 128
 #define LUT_RES_SCALE_JUST 1
@@ -554,7 +560,7 @@ typedef avrlib::ResourcesManager<
     ResourceId,
     avrlib::ResourcesTables<
         string_table,
-        lookup_table_table> > ResourcesManager; 
+        lookup_table_table> > ResourcesManager;
 
 }  // namespace ambika
 

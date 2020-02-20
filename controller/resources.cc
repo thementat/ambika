@@ -381,6 +381,12 @@ static const prog_char str_res_chandradeep[] PROGMEM = "chandradeep";
 static const prog_char str_res_kaushik_todi[] PROGMEM = "kaushik todi";
 static const prog_char str_res_jogeshwari[] PROGMEM = "jogeshwari";
 static const prog_char str_res_rasia[] PROGMEM = "rasia";
+static const prog_char str_res_mpe[] PROGMEM = "mpe";
+static const prog_char str_res_mpe_enabled[] PROGMEM = "mpe enabled";
+static const prog_char str_res_chns[] PROGMEM = "chns";
+static const prog_char str_res_member_channels[] PROGMEM = "member channels";
+static const prog_char str_res_brng[] PROGMEM = "brng";
+static const prog_char str_res_bend_range[] PROGMEM = "bend range";
 
 
 PROGMEM const prog_char* const string_table[] = {
@@ -766,6 +772,12 @@ PROGMEM const prog_char* const string_table[] = {
   str_res_kaushik_todi,
   str_res_jogeshwari,
   str_res_rasia,
+  str_res_mpe,
+  str_res_mpe_enabled,
+  str_res_chns,
+  str_res_member_channels,
+  str_res_brng,
+  str_res_bend_range,
 };
 
 const prog_uint16_t lut_res_lfo_increments[] PROGMEM = {
