@@ -325,7 +325,7 @@ void Part::NoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
     pressed_keys_.NoteOn(note, velocity);
     if (data_.arp_sequencer_mode == ARP_SEQUENCER_MODE_STEP) {
       // Sequencer and arpeggiator are off, we directly trigger the note.
-      InternalNoteOn(note, velocity);
+      InternalNoteOn(channel, note, velocity);
     }
   }
 }
@@ -351,7 +351,7 @@ void Part::NoteOff(uint8_t channel, uint8_t note) {
     // Sequencer and arpeggiator are off, we directly kill the note.
     // We also kill the note in chord trigger mode, to avoid stuck notes, since
     // the chord trigger mode doesn't really clean after itself.
-    InternalNoteOff(note);
+    InternalNoteOff(channel, note);
   } else {
     // The sequencer and arpeggiator might still have pending notes. Release
     // them.
@@ -658,7 +658,7 @@ uint8_t Part::AcceptNote(uint8_t midi_note) const {
   return 1;
 }
 
-void Part::InternalNoteOn(uint8_t note, uint8_t velocity) {
+void Part::InternalNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
   if (!AcceptNote(note)) {
     return;
   }
@@ -733,7 +733,7 @@ void Part::InternalNoteOn(uint8_t note, uint8_t velocity) {
   }
 }
 
-void Part::InternalNoteOff(uint8_t note) {
+void Part::InternalNoteOff(uint8_t channel, uint8_t note) {
   if (note == 0xff) {
     return;
   }
@@ -853,19 +853,19 @@ void Part::ClockSequencer() {
         pressed_keys_.most_recent_note().note - 60, 0, 127);
     if (!n.gate) {
       // Just kill the previous note.
-      InternalNoteOff(previous_generated_note_);
+      InternalNoteOff(0, previous_generated_note_);
       previous_generated_note_ = 0xff;
     } else {
       if (!n.legato) {
         // Kill the previous note and move to the new note.
-        InternalNoteOff(previous_generated_note_);
-        InternalNoteOn(note, n.velocity & 0x7f);
+        InternalNoteOff(0, previous_generated_note_);
+        InternalNoteOn(0, note, n.velocity & 0x7f);
       } else {
         // Kill the previous note, but only after having started playing the
         // new one.
         if (previous_generated_note_ != note) {
-          InternalNoteOn(note, n.velocity & 0x7f);
-          InternalNoteOff(previous_generated_note_);
+          InternalNoteOn(0, note, n.velocity & 0x7f);
+          InternalNoteOff(0, previous_generated_note_);
         } else {
           // Do nothing, this is just a note being held.
         }
@@ -900,7 +900,7 @@ void Part::ClockArpeggiator() {
   if (data_.arp_sequencer_mode == ARP_SEQUENCER_MODE_ARPEGGIATOR) {
     if (pressed_keys_.size() && has_arpeggiator_note) {
       if (data_.arp_direction != ARPEGGIO_DIRECTION_CHORD) {
-        InternalNoteOff(previous_generated_note_);
+        InternalNoteOff(0, previous_generated_note_);
         StepArpeggio();
         const NoteEntry* arpeggio_note = &pressed_keys_.sorted_note(arp_step_);
         if (data_.arp_direction == ARPEGGIO_DIRECTION_AS_PLAYED) {
@@ -912,12 +912,12 @@ void Part::ClockArpeggiator() {
         while (note > 127) {
           note -= 12;
         }
-        InternalNoteOn(note, velocity);
+        InternalNoteOn(0, note, velocity);
         previous_generated_note_ = note;
       } else {
         for (uint8_t i = 0; i < pressed_keys_.size(); ++i) {
           const NoteEntry* retriggered_note = &pressed_keys_.sorted_note(i);
-          InternalNoteOn(
+          InternalNoteOn(0,
               retriggered_note->note,
               retriggered_note->velocity & 0x7f);
         }
@@ -927,12 +927,12 @@ void Part::ClockArpeggiator() {
       }
     } else {
       if (data_.arp_direction != ARPEGGIO_DIRECTION_CHORD) {
-        InternalNoteOff(previous_generated_note_);
+        InternalNoteOff(0, previous_generated_note_);
       } else {
         if (previous_generated_note_ != 0xff) {
           for (uint8_t i = 0; i < pressed_keys_.size(); ++i) {
             const NoteEntry* retriggered_note = &pressed_keys_.sorted_note(i);
-            InternalNoteOff(retriggered_note->note);
+            InternalNoteOff(0, retriggered_note->note);
           }
         }
       }

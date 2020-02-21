@@ -287,8 +287,8 @@ class Part {
   uint8_t AcceptNote(uint8_t note) const;
   uint16_t TuneNote(uint8_t midi_note) const;
 
-  void InternalNoteOn(uint8_t note, uint8_t velocity);
-  void InternalNoteOff(uint8_t note);
+  void InternalNoteOn(uint8_t channel, uint8_t note, uint8_t velocity);
+  void InternalNoteOff(uint8_t channel, uint8_t note);
 
   uint8_t GetNextVoice(uint8_t voice_index) const;
 
