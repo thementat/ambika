@@ -45,7 +45,7 @@ namespace ambika {
 static const uint8_t kFreeSlot = 0xff;
 
 struct NoteEntry {
-  uint8_t note;
+  uint16_t note;
   uint8_t velocity;
   uint8_t next_ptr;  // Base 1.
 };
@@ -53,10 +53,10 @@ struct NoteEntry {
 // This looks crazy, but we are more concerned about RAM used than code size here.
 template<uint8_t capacity>
 class NoteStack {
- public: 
+ public:
   NoteStack() { }
   void Init() { Clear(); }
-  void NoteOn(uint8_t note, uint8_t velocity) {
+  void NoteOn(uint16_t note, uint8_t velocity) {
     // Remove the note from the list first (in case it is already here).
     NoteOff(note);
     // In case of saturation, remove the least recently played note from the
@@ -98,8 +98,8 @@ class NoteStack {
     }
     ++size_;
   }
-  
-  void NoteOff(uint8_t note) {
+
+  void NoteOff(uint16_t note) {
     uint8_t current = root_ptr_;
     uint8_t previous = 0;
     while (current) {
@@ -129,7 +129,7 @@ class NoteStack {
      --size_;
     }
   }
-  
+
   void Clear() {
     size_ = 0;
     memset(pool_ + 1, 0, sizeof(NoteEntry) * capacity);
