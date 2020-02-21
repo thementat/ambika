@@ -21,6 +21,9 @@
 #ifndef CONTROLLER_MULTI_H_
 #define CONTROLLER_MULTI_H_
 
+#define mpe_on 1
+#define mpe_channels 15
+
 #include "avrlib/base.h"
 
 #include "controller/controller.h"
@@ -44,6 +47,16 @@ struct PartMapping {
     return !midi_channel || (channel + 1 == midi_channel);
   }
 
+  inline uint8_t mpe_channel(uint8_t channel) const {
+    if (midi_channel == 1) {
+      return (channel + 1 > 1) && (channel + 1 <= 1 + mpe_channels);
+    } else if (midi_channel == 12) {
+      return (channel + 1 < 16) && (channel + 1 >= 16 - mpe_channels);
+    } else {
+      return 0;
+    }
+  }
+
   inline uint8_t accept_note(uint8_t note) const {
     if (keyrange_low <= keyrange_high) {
       return (note >= keyrange_low && note <= keyrange_high);
@@ -53,7 +66,8 @@ struct PartMapping {
   }
 
   inline uint8_t accept_channel_note(uint8_t channel, uint8_t note) const {
-    return receive_channel(channel) && accept_note(note);
+    return (receive_channel(channel) || mpe_channel(channel))
+      && accept_note(note);
   }
 
   inline uint8_t tx_channel() const {
