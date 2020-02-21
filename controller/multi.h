@@ -27,7 +27,7 @@
 #include "controller/part.h"
 
 namespace ambika {
-  
+
 struct KnobAssignment {
   uint8_t part;
   uint8_t parameter;
@@ -39,11 +39,11 @@ struct PartMapping {
   uint8_t keyrange_low;
   uint8_t keyrange_high;
   uint8_t voice_allocation;
-  
+
   inline uint8_t receive_channel(uint8_t channel) const {
     return !midi_channel || (channel + 1 == midi_channel);
   }
-  
+
   inline uint8_t accept_note(uint8_t note) const {
     if (keyrange_low <= keyrange_high) {
       return (note >= keyrange_low && note <= keyrange_high);
@@ -51,11 +51,11 @@ struct PartMapping {
       return note <= keyrange_high || note >= keyrange_low;
     }
   }
-  
+
   inline uint8_t accept_channel_note(uint8_t channel, uint8_t note) const {
     return receive_channel(channel) && accept_note(note);
   }
-  
+
   inline uint8_t tx_channel() const {
     return midi_channel == 0 ? 0 : midi_channel - 1;
   }
@@ -64,16 +64,16 @@ struct PartMapping {
 struct MultiData {
   // Offset: 0-24
   PartMapping part_mapping_[kNumParts];
-  
+
   // Offset: 24-28
   uint8_t clock_bpm;
   uint8_t clock_groove_template;
   uint8_t clock_groove_amount;
   uint8_t clock_release;
-  
+
   // Offset: 28-52
   KnobAssignment knob_assignment[8];
-  
+
   // Offset: 52-56
   uint8_t padding2[4];
 };
@@ -85,7 +85,7 @@ enum MultiParameter {
   PRM_MULTI_KEYRANGE_LOW,
   PRM_MULTI_KEYRANGE_HIGH,
   PRM_MULTI_VOICE_ALLOCATION,
-  
+
   PRM_MULTI_CLOCK_BPM = 24,
   PRM_MULTI_CLOCK_GROOVE_TEMPLATE = 25,
   PRM_MULTI_CLOCK_GROOVE_AMOUNT = 26,
@@ -99,24 +99,24 @@ class Multi {
  public:
   Multi() { }
   static void Init(bool force_reset);
-  
+
   static void InitSettings(InitializationMode mode);
-  
-  static void StartNote(uint8_t note) {
+
+  static void StartNote(uint8_t channel, uint8_t note) {
     if (!running_) {
       Start();
     }
     for (uint8_t i = 0; i < kNumParts; ++i) {
-      parts_[i].NoteOn(note, 0x64);
+      parts_[i].NoteOn(channel, note, 0x64);
     }
   }
-  
-  static void StopNote(uint8_t note) {
+
+  static void StopNote(uint8_t channel, uint8_t note) {
     for (uint8_t i = 0; i < kNumParts; ++i) {
-      parts_[i].NoteOff(note);
+      parts_[i].NoteOff(channel, note);
     }
   }
-  
+
   static void NoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
     // If no note has been played for a while, reset the sequencer and
     // arpeggiator to the first step.
@@ -125,14 +125,14 @@ class Multi {
     }
     for (uint8_t i = 0; i < kNumParts; ++i) {
       if (data_.part_mapping_[i].accept_channel_note(channel, note)) {
-        parts_[i].NoteOn(note, velocity);
+        parts_[i].NoteOn(channel, note, velocity);
       }
     }
   }
   static void NoteOff(uint8_t channel, uint8_t note, uint8_t velocity) {
     for (uint8_t i = 0; i < kNumParts; ++i) {
       if (data_.part_mapping_[i].accept_channel_note(channel, note)) {
-        parts_[i].NoteOff(note);
+        parts_[i].NoteOff(channel, note);
       }
     }
   }
@@ -142,21 +142,21 @@ class Multi {
       uint8_t value) {
     for (uint8_t i = 0; i < kNumParts; ++i) {
       if (data_.part_mapping_[i].receive_channel(channel)) {
-        parts_[i].ControlChange(controller, value);
+        parts_[i].ControlChange(channel, controller, value);
       }
     }
   }
   static void PitchBend(uint8_t channel, uint16_t pitch_bend) {
     for (uint8_t i = 0; i < kNumParts; ++i) {
       if (data_.part_mapping_[i].receive_channel(channel)) {
-        parts_[i].PitchBend(pitch_bend);
+        parts_[i].PitchBend(channel, pitch_bend);
       }
     }
   }
   static void Aftertouch(uint8_t channel, uint8_t note, uint8_t velocity) {
     for (uint8_t i = 0; i < kNumParts; ++i) {
       if (data_.part_mapping_[i].accept_channel_note(channel, note)) {
-        parts_[i].Aftertouch(note, velocity);
+        parts_[i].Aftertouch(channel, note, velocity);
       }
     }
   }
@@ -227,7 +227,7 @@ class Multi {
   static void Continue() {
     Start();
   }
-  
+
   static void Tick() {
     ++clock_counter_;
     ++lfo_refresh_counter_;
@@ -236,32 +236,32 @@ class Multi {
       clock_counter_ = 0;
     }
   }
-  
+
   static void SetValue(uint8_t address, uint8_t value);
   static inline uint8_t GetValue(uint8_t address) {
     uint8_t* bytes = static_cast<uint8_t*>(static_cast<void*>(&data_));
     return bytes[address];
   }
-  
+
   static void UpdateClocks();
-  
+
   static Part* mutable_part(uint8_t i) { return &parts_[i]; }
   static const Part& part(uint8_t i) { return parts_[i]; }
-  
+
   static MultiData* mutable_data() { return &data_; }
   static const MultiData& data() { return data_; }
   static const uint8_t* raw_data() {
     return static_cast<const uint8_t*>(static_cast<const void*>(&data_));
   }
-  static uint8_t* mutable_raw_data() { 
+  static uint8_t* mutable_raw_data() {
     return static_cast<uint8_t*>(static_cast<void*>(&data_));
   }
-  
+
   static uint8_t internal_clock() { return data_.clock_bpm >= 40; }
 
   static uint8_t SolveAllocationConflicts(uint8_t constraint);
   static void AssignVoicesToParts();
-  
+
   static uint8_t part_channel(Part* part) {
     for (uint8_t i = 0; i < kNumParts; ++i) {
       if (&parts_[i] == part) {
@@ -270,11 +270,11 @@ class Multi {
     }
     return 0;
   }
-  
+
   static uint8_t step() { return step_count_; }
   static uint8_t running() { return running_; }
   static void Touch();
-  
+
   static inline uint8_t flags() {
     uint8_t result = flags_;
     for (uint8_t i = 0; i < kNumParts; ++i) {
@@ -282,17 +282,17 @@ class Multi {
     }
     return result;
   }
-  
+
   inline void ClearFlag(uint8_t flag) {
     flags_ &= ~flag;
     for (uint8_t i = 0; i < kNumParts; ++i) {
       parts_[i].ClearFlag(flag);
     }
   }
-  
+
  private:
   static void ComputeInternalClockOverflowsTable();
-  
+
   // Incremented at 39kHz
   static uint16_t clock_counter_;
   static uint16_t lfo_refresh_counter_;
@@ -313,12 +313,12 @@ class Multi {
   // This list of tick durations is computed from the BPM and the groove
   // template.
   static uint16_t tick_duration_table_[kNumStepsInGroovePattern];
-  
+
 
   static MultiData data_;
   static Part parts_[kNumParts];
   static uint8_t flags_;
-  
+
   DISALLOW_COPY_AND_ASSIGN(Multi);
 };
 
