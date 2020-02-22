@@ -31,6 +31,7 @@ void VoiceAllocator::Clear() {
 }
 
 void VoiceAllocator::ClearNotes() {
+  memset(chn_, 0, size_);
   memset(pool_, 0, size_);
 }
 
@@ -72,6 +73,7 @@ uint8_t VoiceAllocator::NoteOn(uint8_t channel, uint8_t note) {
     voice = cyclic_allocator_;
   }
 
+  chn_[voice] = 0x80 | channel;
   pool_[voice] = 0x80 | note;
   Touch(voice);
   return voice;
@@ -104,6 +106,7 @@ uint8_t VoiceAllocator::NoteOff(uint8_t note) {
     }
   } else {
     if (voice != 0xff) {
+      chn_[voice] = 0xff;
       pool_[voice] = 0xff;
     }
   }
