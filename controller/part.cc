@@ -322,7 +322,7 @@ void Part::NoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
   if (velocity == 0) {
     NoteOff(channel, note);
   } else {
-    pressed_keys_.NoteOn(note, velocity);
+    pressed_keys_.NoteOn(channel, note, velocity);
     if (data_.arp_sequencer_mode == ARP_SEQUENCER_MODE_STEP) {
       // Sequencer and arpeggiator are off, we directly trigger the note.
       InternalNoteOn(channel, note, velocity);
@@ -666,7 +666,7 @@ void Part::InternalNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
 
   uint8_t retrigger_lfos = 0;
   if (data_.polyphony_mode == MONO) {
-    mono_allocator_.NoteOn(note, velocity);
+    mono_allocator_.NoteOn(channel, note, velocity);
     uint16_t tuned_note = TuneNote(note);
     uint8_t legato = mono_allocator_.size() > 1;
     uint8_t pitch_drift = 0;
@@ -683,7 +683,7 @@ void Part::InternalNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
     // Prevent the same note to be allocated twice on two different voices.
     uint8_t voice_index = poly_allocator_.FindActive(note);
     if (voice_index == 0xff) {
-      voice_index = poly_allocator_.NoteOn(note);
+      voice_index = poly_allocator_.NoteOn(channel, note);
     }
     if (data_.polyphony_mode == UNISON_2X) {
       if (voice_index < poly_allocator_.size()) {

@@ -45,6 +45,7 @@ namespace ambika {
 static const uint8_t kFreeSlot = 0xff;
 
 struct NoteEntry {
+  uint8_t channel;
   uint8_t note;
   uint8_t velocity;
   uint8_t next_ptr;  // Base 1.
@@ -53,18 +54,20 @@ struct NoteEntry {
 // This looks crazy, but we are more concerned about RAM used than code size here.
 template<uint8_t capacity>
 class NoteStack {
- public: 
+ public:
   NoteStack() { }
   void Init() { Clear(); }
-  void NoteOn(uint8_t note, uint8_t velocity) {
+  void NoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
     // Remove the note from the list first (in case it is already here).
     NoteOff(note);
     // In case of saturation, remove the least recently played note from the
     // stack.
     if (size_ == capacity) {
+      uint8_t least_recent_channel;
       uint8_t least_recent_note;
       for (uint8_t i = 1; i <= capacity; ++i) {
         if (pool_[i].next_ptr == 0) {
+          least_recent_channel = pool_[i].channel;
           least_recent_note = pool_[i].note;
         }
       }
@@ -79,10 +82,11 @@ class NoteStack {
       }
     }
     pool_[free_slot].next_ptr = root_ptr_;
+    pool_[free_slot].channel = channel;
     pool_[free_slot].note = note;
     pool_[free_slot].velocity = velocity;
     root_ptr_ = free_slot;
-    // The last step consists in inserting the note in the sorted list.
+    // The last step consists in inserting the note & channel in the sorted list.
     for (uint8_t i = 0; i < size_; ++i) {
       if (pool_[sorted_ptr_[i]].note > note) {
         for (uint8_t j = size_; j > i; --j) {
@@ -98,7 +102,7 @@ class NoteStack {
     }
     ++size_;
   }
-  
+
   void NoteOff(uint8_t note) {
     uint8_t current = root_ptr_;
     uint8_t previous = 0;
@@ -124,18 +128,20 @@ class NoteStack {
        }
      }
      pool_[current].next_ptr = 0;
+     pool_[current].channel = kFreeSlot;
      pool_[current].note = kFreeSlot;
      pool_[current].velocity = 0;
      --size_;
     }
   }
-  
+
   void Clear() {
     size_ = 0;
     memset(pool_ + 1, 0, sizeof(NoteEntry) * capacity);
     memset(sorted_ptr_ + 1, 0, capacity);
     root_ptr_ = 0;
     for (uint8_t i = 0; i <= capacity; ++i) {
+      pool_[i].channel = kFreeSlot;
       pool_[i].note = kFreeSlot;
     }
   }

@@ -22,7 +22,7 @@
 #include <string.h>
 
 namespace ambika {
-  
+
 void VoiceAllocator::Clear() {
   ClearNotes();
   for (uint8_t i = 0; i < size_; ++i) {
@@ -34,20 +34,20 @@ void VoiceAllocator::ClearNotes() {
   memset(pool_, 0, size_);
 }
 
-uint8_t VoiceAllocator::NoteOn(uint8_t note) {
+uint8_t VoiceAllocator::NoteOn(uint8_t channel, uint8_t note) {
   if (size_ == 0) {
     return 0xff;
   }
-  
+
   uint8_t voice;
-  
+
   if (cyclic_allocator_ == 0xff) {
     // First, check if there is a voice currently playing this note. In this case
     // This voice will be responsible for retriggering this note.
     // Hint: if you're more into string instruments than keyboard instruments,
     // you can safely comment those lines.
     voice = Find(note);
-  
+
     // Then, try to find the least recently touched, currently inactive voice.
     if (voice == 0xff) {
       for (uint8_t i = 0; i < size_; ++i) {
@@ -71,7 +71,7 @@ uint8_t VoiceAllocator::NoteOn(uint8_t note) {
     }
     voice = cyclic_allocator_;
   }
-  
+
   pool_[voice] = 0x80 | note;
   Touch(voice);
   return voice;
