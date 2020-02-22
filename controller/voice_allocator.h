@@ -25,7 +25,7 @@
 namespace ambika {
 
 class VoiceAllocator {
- public:
+ public: 
   VoiceAllocator() { }
   void Init(uint8_t size, bool cyclic_mode, uint8_t* pool, uint8_t* lru) {
     size_ = size;
@@ -34,19 +34,19 @@ class VoiceAllocator {
     cyclic_allocator_ = cyclic_mode ? 0 : 0xff;
     Clear();
   }
-
-  uint8_t NoteOn(uint8_t channel, uint8_t note);
+  
+  uint8_t NoteOn(uint8_t note);
   uint8_t NoteOff(uint8_t note);
   uint8_t Find(uint8_t note) const;
   uint8_t FindActive(uint8_t note) const;
-
+  
   void Clear();
   void ClearNotes();
   uint8_t size() const { return size_; }
 
  private:
   void Touch(uint8_t voice);
-
+   
   // Holds the indices of the voices sorted by most recent usage.
   uint8_t* pool_;
   uint8_t* lru_;
