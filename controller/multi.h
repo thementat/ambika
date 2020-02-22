@@ -21,7 +21,6 @@
 #ifndef CONTROLLER_MULTI_H_
 #define CONTROLLER_MULTI_H_
 
-//placeholders until I can figure out the UI
 #define mpe_on 1
 #define mpe_channels 15
 
