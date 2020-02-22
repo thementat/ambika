@@ -254,8 +254,7 @@ void Part::InitializeAllocators() {
         size,
         data_.polyphony_mode == CYCLIC,
         mono_allocator_.bytes(),
-        mono_allocator_.bytes() + 12,
-        mono_allocator_.bytes() + 24);
+        mono_allocator_.bytes() + 12);
   }
   polyphony_mode_ = data_.polyphony_mode;
 }
