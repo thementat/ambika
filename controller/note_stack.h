@@ -42,7 +42,7 @@
 
 namespace ambika {
 
-static const uint8_t kFreeSlot = 0xff;
+static const uint16_t kFreeSlot = 0xffff;
 
 struct NoteEntry {
   uint16_t note;
@@ -62,7 +62,7 @@ class NoteStack {
     // In case of saturation, remove the least recently played note from the
     // stack.
     if (size_ == capacity) {
-      uint8_t least_recent_note;
+      uint16_t least_recent_note;
       for (uint8_t i = 1; i <= capacity; ++i) {
         if (pool_[i].next_ptr == 0) {
           least_recent_note = pool_[i].note;
