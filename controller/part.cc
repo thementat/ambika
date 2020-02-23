@@ -322,7 +322,11 @@ void Part::NoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
   if (velocity == 0) {
     NoteOff(channel, note);
   } else {
-    pressed_keys_.NoteOn(note, velocity);
+    if (1) {
+      pressed_keys_.NoteOn(channel, velocity);
+    } else {
+      pressed_keys_.NoteOn(note, velocity);
+    }
     if (data_.arp_sequencer_mode == ARP_SEQUENCER_MODE_STEP) {
       // Sequencer and arpeggiator are off, we directly trigger the note.
       InternalNoteOn(channel, note, velocity);
@@ -344,7 +348,11 @@ void Part::NoteOff(uint8_t channel, uint8_t note) {
     }
     return;
   }
-  pressed_keys_.NoteOff(note);
+  if (1) {
+    pressed_keys_.NoteOff(channel);
+  } else {
+    pressed_keys_.NoteOff(note);
+  }
   if (data_.arp_sequencer_mode == ARP_SEQUENCER_MODE_STEP ||
       (data_.arp_sequencer_mode == ARP_SEQUENCER_MODE_ARPEGGIATOR &&
        data_.arp_direction == ARPEGGIO_DIRECTION_CHORD)) {
@@ -487,7 +495,12 @@ void Part::Aftertouch(uint8_t channel, uint8_t note, uint8_t velocity) {
       data_.polyphony_mode == CYCLIC ||
       data_.polyphony_mode == CHAIN) {
     // Send the aftertouch change to the voicecard playing the affected note.
-    uint8_t voice_index = poly_allocator_.Find(note);
+    uint8_t voice_index;
+    if (1) {
+      voice_index = poly_allocator_.Find(channel);
+    } else {
+      voice_index = poly_allocator_.Find(note);
+    }
     uint8_t size = poly_allocator_.size();
     if (data_.polyphony_mode == CYCLIC) {
       size >>= 1;
@@ -501,7 +514,12 @@ void Part::Aftertouch(uint8_t channel, uint8_t note, uint8_t velocity) {
     }
   } else if (data_.polyphony_mode == UNISON_2X) {
     // Send the aftertouch change to the voicecard playing the affected note.
-    uint8_t voice_index = poly_allocator_.Find(note);
+    uint8_t voice_index;
+    if (1) {
+      voice_index = poly_allocator_.Find(channel);
+    } else {
+      voice_index = poly_allocator_.Find(note);
+    }
     if (voice_index < poly_allocator_.size()) {
       voice_index <<= 1;
       voicecard_tx.WriteData(
@@ -666,7 +684,11 @@ void Part::InternalNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
 
   uint8_t retrigger_lfos = 0;
   if (data_.polyphony_mode == MONO) {
-    mono_allocator_.NoteOn(note, velocity);
+    if (1) {
+      mono_allocator_.NoteOn(channel, velocity);
+    } else {
+      mono_allocator_.NoteOn(note, velocity);
+    }
     uint16_t tuned_note = TuneNote(note);
     uint8_t legato = mono_allocator_.size() > 1;
     uint8_t pitch_drift = 0;
@@ -681,9 +703,18 @@ void Part::InternalNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
     retrigger_lfos = !legato || !data_.legato;
   } else {
     // Prevent the same note to be allocated twice on two different voices.
-    uint8_t voice_index = poly_allocator_.FindActive(note);
+    uint8_t voice_index;
+    if (1) {
+      voice_index = poly_allocator_.FindActive(channel);
+    } else {
+      voice_index = poly_allocator_.FindActive(note);
+    }
     if (voice_index == 0xff) {
-      voice_index = poly_allocator_.NoteOn(note);
+      if (1) {
+        voice_index = poly_allocator_.NoteOn(channel);
+      } else {
+        voice_index = poly_allocator_.NoteOn(note);
+      }
     }
     if (data_.polyphony_mode == UNISON_2X) {
       if (voice_index < poly_allocator_.size()) {
@@ -742,7 +773,11 @@ void Part::InternalNoteOff(uint8_t channel, uint8_t note) {
   uint8_t retrigger_lfos = 0;
   if (data_.polyphony_mode == MONO) {
     uint8_t top_note = mono_allocator_.most_recent_note().note;
-    mono_allocator_.NoteOff(note);
+    if (1) {
+      mono_allocator_.NoteOff(channel);
+    } else {
+      mono_allocator_.NoteOff(note);
+    }
     if (mono_allocator_.size() == 0) {
       // No key is pressed, we trigger the release segment.
       for (uint8_t i = 0; i < num_allocated_voices_; ++i) {
@@ -766,7 +801,12 @@ void Part::InternalNoteOff(uint8_t channel, uint8_t note) {
       }
     }
   } else {
-    uint8_t voice_index = poly_allocator_.NoteOff(note);
+    uint8_t voice_index;
+    if (1) {
+      voice_index = poly_allocator_.NoteOff(channel);
+    } else {
+      voice_index = poly_allocator_.NoteOff(note);
+    }
     if (data_.polyphony_mode == UNISON_2X) {
       if (voice_index < poly_allocator_.size()) {
         voice_index <<= 1;
