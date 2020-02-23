@@ -65,9 +65,9 @@ static const prog_Patch init_patch PROGMEM = {
   //WAVEFORM_WAVETABLE_1 + 1, 63, -24, 0,
   WAVEFORM_NONE, 0, 0, 0,
   WAVEFORM_NONE, 0, 0, 0,
-  
+
   // Mixer
-  32, OP_SUM, 0, WAVEFORM_SUB_OSC_SQUARE_1, 0, 0, 0, 0, 
+  32, OP_SUM, 0, WAVEFORM_SUB_OSC_SQUARE_1, 0, 0, 0, 0,
 
   // Filter
   127, 0, 0, 0, 0, 0, 63, 0,
@@ -75,9 +75,9 @@ static const prog_Patch init_patch PROGMEM = {
   0, 40, 20, 60, 0, 0, 0, 0,
   0, 40, 20, 60, 0, 0, 0, 0,
   0, 40, 20, 60, 0, 0, 0, 0,
-  
+
   LFO_WAVEFORM_TRIANGLE, 16,
-  
+
   // Routing
   MOD_SRC_LFO_1, MOD_DST_OSC_1, 0,
   MOD_SRC_ENV_1, MOD_DST_OSC_2, 0,
@@ -93,13 +93,13 @@ static const prog_Patch init_patch PROGMEM = {
   MOD_SRC_VELOCITY, MOD_DST_VCA, 0,
   MOD_SRC_PITCH_BEND, MOD_DST_OSC_1_2_COARSE, 0,
   MOD_SRC_LFO_1, MOD_DST_OSC_1_2_COARSE, 0,
-  
+
   // Modifiers
   0, 0, 0,
   0, 0, 0,
   0, 0, 0,
   0, 0, 0,
-  
+
   // Padding
   0, 0, 0, 0, 0, 0, 0, 0,
 };
@@ -189,7 +189,7 @@ void Voice::Release() {
 /* static */
 inline void Voice::LoadSources() {
   static uint8_t ops[9];
-  
+
   // Rescale the value of each modulation sources. Envelopes are in the
   // 0-16383 range ; just like pitch. All are scaled to 0-255.
   modulation_sources_[MOD_SRC_NOISE] = Random::GetByte();
@@ -241,7 +241,7 @@ inline void Voice::LoadSources() {
   }
 
   modulation_destinations_[MOD_DST_VCA] = part_.volume << 1;
-  
+
   // Load and scale to 0-16383 the initial value of each modulated parameter.
   dst_[MOD_DST_OSC_1] = dst_[MOD_DST_OSC_2] = 8192;
   dst_[MOD_DST_OSC_1_2_COARSE] = dst_[MOD_DST_OSC_1_2_FINE] = 8192;
@@ -258,7 +258,7 @@ inline void Voice::LoadSources() {
   uint16_t cutoff = U8U8Mul(patch_.filter[0].cutoff, 128);
   dst_[MOD_DST_FILTER_CUTOFF] = S16ClipU14(cutoff + pitch_value_ - 8192);
   dst_[MOD_DST_FILTER_RESONANCE] = patch_.filter[0].resonance << 8;
-  
+
   dst_[MOD_DST_ATTACK] = 8192;
   dst_[MOD_DST_DECAY] = 8192;
   dst_[MOD_DST_RELEASE] = 8192;
@@ -318,12 +318,12 @@ inline void Voice::UpdateDestinations() {
       modulation_sources_[MOD_SRC_ENV_2]));
   cutoff = S16ClipU14(cutoff + S8S8Mul(patch_.filter_lfo,
       modulation_sources_[MOD_SRC_LFO_2] + 128));
-  // Velocity to cutoff & keyboard tracking to cutoff added (phase57 mod) 
-  cutoff = S16ClipU14(cutoff + S8U8Mul(patch_.filter_velo, 
+  // Velocity to cutoff & keyboard tracking to cutoff added (phase57 mod)
+  cutoff = S16ClipU14(cutoff + S8U8Mul(patch_.filter_velo,
     modulation_sources_[MOD_SRC_VELOCITY])); // velocity to filter freq
-  cutoff = S16ClipU14(cutoff + S8S8Mul(patch_.filter_kbt,  
+  cutoff = S16ClipU14(cutoff + S8S8Mul(patch_.filter_kbt,
     modulation_sources_[MOD_SRC_NOTE] + 128)); // keyb tracking (note) to filter freq
-  
+
   // Store in memory all the updated parameters.
   modulation_destinations_[MOD_DST_FILTER_CUTOFF] = U14ShiftRight6(cutoff);
 #ifdef POLIVOKS_FILTERBOARD
@@ -340,7 +340,7 @@ inline void Voice::UpdateDestinations() {
   osc_1.set_fm_parameter(patch_.osc[0].range + 36);
   osc_2.set_parameter(U15ShiftRight7(dst_[MOD_DST_PARAMETER_2]));
   osc_2.set_fm_parameter(patch_.osc[1].range + 36);
-  
+
   int8_t attack_mod = U15ShiftRight7(dst_[MOD_DST_ATTACK]) - 64;
   int8_t decay_mod = U15ShiftRight7(dst_[MOD_DST_DECAY]) - 64;
   int8_t release_mod = U15ShiftRight7(dst_[MOD_DST_RELEASE]) - 64;
@@ -357,7 +357,7 @@ inline void Voice::UpdateDestinations() {
           patch_.env_lfo[i].sustain,
           new_release);
   }
-  
+
   voice_lfo_.set_phase_increment(
       ResourcesManager::Lookup<uint16_t, uint8_t>(
           lut_res_lfo_increments, U14ShiftRight6(dst_[MOD_DST_LFO_4]) >> 1));
@@ -373,11 +373,11 @@ inline void Voice::RenderOscillators() {
   }
   pitch_value_ = base_pitch;
 
-  // -4 / +4 semitones by the vibrato and pitch bend (coarse).
+  // -64 / +64 semitones by the vibrato and pitch bend (coarse).
   // -0.5 / +0.5 semitones by the vibrato and pitch bend (fine).
-  base_pitch += (dst_[MOD_DST_OSC_1_2_COARSE] - 8192) >> 4;
+  base_pitch += (dst_[MOD_DST_OSC_1_2_COARSE] - 8192) >> 0;
   base_pitch += (dst_[MOD_DST_OSC_1_2_FINE] - 8192) >> 7;
-  
+
   // Update the oscillator parameters.
   for (uint8_t i = 0; i < kNumOscillators; ++i) {
     int16_t pitch = base_pitch;
@@ -448,7 +448,7 @@ void Voice::ProcessBlock() {
   LoadSources();
   ProcessModulationMatrix();
   UpdateDestinations();
-  
+
   // Skip the oscillator rendering code if the VCA output has converged to
   // a small value.
   if (vca() < 2) {
@@ -464,7 +464,7 @@ void Voice::ProcessBlock() {
   uint8_t osc_1_gain = ~osc_2_gain;
   uint8_t wet_gain = U14ShiftRight6(dst_[MOD_DST_MIX_PARAM]);
   uint8_t dry_gain = ~wet_gain;
-  
+
   // Mix oscillators.
   switch (op) {
     case OP_RING_MOD:
@@ -520,7 +520,7 @@ void Voice::ProcessBlock() {
       }
       break;
   }
-  
+
   // Mix-in sub oscillator or transient generator.
   uint8_t sub_gain = U15ShiftRight7(dst_[MOD_DST_MIX_SUB_OSC]);
   if (patch_.mix_sub_osc_shape < WAVEFORM_SUB_OSC_CLICK) {
@@ -535,7 +535,7 @@ void Voice::ProcessBlock() {
   uint8_t signal_gain = ~noise_gain;
   wet_gain = U14ShiftRight6(dst_[MOD_DST_MIX_FUZZ]);
   dry_gain = ~wet_gain;
-  
+
   // Mix with noise, and apply distortion. The loop processes samples by 2 to
   // avoid some of the overhead of audio_buffer.Overwrite()
   for (uint8_t i = 0; i < kAudioBlockSize;) {
