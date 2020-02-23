@@ -476,10 +476,19 @@ void Part::ControlChange(uint8_t channel, uint8_t controller, uint8_t value) {
 }
 
 void Part::PitchBend(uint8_t channel, uint16_t pitch_bend) {
-  WriteToAllVoices(
-      VOICECARD_DATA_MODULATION,
-      MOD_SRC_PITCH_BEND,
-      U14ShiftRight6(pitch_bend));
+  if (1) {
+    uint8_t voice_index = poly_allocator_.Find(channel);
+    voicecard_tx.WriteData(
+        allocated_voices_[voice_index],
+        VOICECARD_DATA_MODULATION,
+        MOD_SRC_PITCH_BEND,
+        U14ShiftRight6(pitch_bend));
+  } else {
+    WriteToAllVoices(
+        VOICECARD_DATA_MODULATION,
+        MOD_SRC_PITCH_BEND,
+        U14ShiftRight6(pitch_bend));
+  }
 }
 
 uint8_t Part::GetNextVoice(uint8_t index) const {

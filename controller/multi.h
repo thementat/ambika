@@ -163,7 +163,8 @@ class Multi {
   }
   static void PitchBend(uint8_t channel, uint16_t pitch_bend) {
     for (uint8_t i = 0; i < kNumParts; ++i) {
-      if (data_.part_mapping_[i].receive_channel(channel)) {
+      if (data_.part_mapping_[i].receive_channel(channel) ||
+            data_.part_mapping_[i].mpe_channel(channel)) {
         parts_[i].PitchBend(channel, pitch_bend);
       }
     }
