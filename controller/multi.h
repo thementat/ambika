@@ -51,7 +51,7 @@ struct PartMapping {
   inline uint8_t mpe_channel(uint8_t channel) const {
     if (midi_channel == 1) {
       return (channel + 1 > 1) && (channel + 1 <= 1 + mpe_channels);
-    } else if (midi_channel == 12) {
+    } else if (midi_channel == 16) {
       return (channel + 1 < 16) && (channel + 1 >= 16 - mpe_channels);
     } else {
       return 0;
@@ -177,7 +177,9 @@ class Multi {
   }
   static void Aftertouch(uint8_t channel, uint8_t velocity) {
     for (uint8_t i = 0; i < kNumParts; ++i) {
-      if (data_.part_mapping_[i].receive_channel(channel)) {
+      if (data_.part_mapping_[i].mpe_channel(channel)) {
+        parts_[i].Aftertouch(channel, 1, velocity);
+      } else if (data_.part_mapping_[i].receive_channel(channel)) {
         parts_[i].Aftertouch(velocity);
       }
     }
