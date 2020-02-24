@@ -564,6 +564,24 @@ void Part::AllSoundOff() {
   }
 }
 
+void Part::Brightness(uint8_t channel, uint8_t value) {
+  // check to see if the cc message came in on a mpe member channel
+  if (1 == 1) {
+    uint8_t voice_index = poly_allocator_.Find(channel);
+    voicecard_tx.WriteData(
+        allocated_voices_[voice_index],
+        VOICECARD_DATA_MODULATION,
+        MOD_SRC_WHEEL_2,
+        value << 1);
+  } else {
+    // otherwise it came in on the main channel, and is for all voices
+    WriteToAllVoices(
+      VOICECARD_DATA_MODULATION
+      , MOD_SRC_WHEEL_2
+      , value << 1);
+  }
+}
+
 void Part::AllNotesOff() {
   if (ignore_note_off_messages_) {
     return;

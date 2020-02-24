@@ -207,6 +207,7 @@ class Part {
   void PitchBend(uint8_t channel, uint16_t pitch_bend);
   void Aftertouch(uint8_t channel, uint8_t note, uint8_t velocity);
   void Aftertouch(uint8_t velocity);
+  void Brightness(uint8_t channel, uint8_t value);
   void AllSoundOff();
   void ResetAllControllers();
   void AllNotesOff();

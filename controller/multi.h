@@ -156,8 +156,9 @@ class Multi {
       uint8_t controller,
       uint8_t value) {
     for (uint8_t i = 0; i < kNumParts; ++i) {
-      if (data_.part_mapping_[i].receive_channel(channel)) {
-        parts_[i].ControlChange(channel, controller, value);
+      if (data_.part_mapping_[i].receive_channel(channel) ||
+            data_.part_mapping_[i].mpe_channel(channel)) {
+        parts_[i].Brightness(channel, value);
       }
     }
   }
@@ -182,6 +183,14 @@ class Multi {
         parts_[i].Aftertouch(channel, 1, velocity);
       } else if (data_.part_mapping_[i].receive_channel(channel)) {
         parts_[i].Aftertouch(velocity);
+      }
+    }
+  }
+  static void Brightness(uint8_t channel, uint8_t value) {
+    for (uint8_t i = 0; i < kNumParts; ++i) {
+      if (data_.part_mapping_[i].receive_channel(channel) ||
+            data_.part_mapping_[i].mpe_channel(channel)) {
+        parts_[i].Brightness(channel, value);
       }
     }
   }

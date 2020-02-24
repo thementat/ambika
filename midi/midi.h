@@ -36,7 +36,6 @@ const uint8_t kHoldPedal = 0x40;
 const uint8_t kHarmonicIntensity = 0x47;
 const uint8_t kRelease = 0x48;
 const uint8_t kAttack = 0x49;
-const uint8_t kBrightness = 0x4a;
 const uint8_t kDataIncrement = 0x60;
 const uint8_t kDataDecrement = 0x61;
 const uint8_t kNrpnMsb = 0x63;
@@ -59,6 +58,7 @@ struct MidiDevice {
   static void ProgramChange(uint8_t channel, uint8_t program) { }
   static void PitchBend(uint8_t channel, uint16_t pitch_bend) { }
 
+  static void Brightness(uint8_t channel, uint8_t value) { }
   static void AllSoundOff(uint8_t channel) { }
   static void ResetAllControllers(uint8_t channel) { }
   static void LocalControl(uint8_t channel, uint8_t state) { }
@@ -96,7 +96,7 @@ class MidiStreamParser {
 
  private:
   void MessageReceived(uint8_t status);
- 
+
   uint8_t running_status_;
   uint8_t data_[3];
   uint8_t data_size_;  // Number of non-status byte received.
@@ -208,6 +208,9 @@ void MidiStreamParser<Device>::MessageReceived(uint8_t status) {
 
     case 0xb0:
       switch (data_[0]) {
+        case 0x4a:
+          Device::Brightness(lo, data_[1]);
+          break;
         case 0x78:
           Device::AllSoundOff(lo);
           break;
