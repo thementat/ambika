@@ -92,6 +92,10 @@ class MidiDispatcher : public midi::MidiDevice {
   static void Aftertouch(uint8_t channel, uint8_t velocity) {
     multi.Aftertouch(channel, velocity);
   }
+  static void Brightness(uint8_t channel, uint8_t value) {
+    multi.Brightness(channel, value);
+  }
+
   static void AllSoundOff(uint8_t channel) {
     multi.AllSoundOff(channel);
   }
@@ -107,7 +111,7 @@ class MidiDispatcher : public midi::MidiDevice {
   static void OmniModeOn(uint8_t channel) {
     multi.OmniModeOn(channel);
   }
-  
+
   static void ProgramChange(uint8_t channel, uint8_t program) {
     if (system_settings.rx_program_change()) {
       for (uint8_t retry = 0; retry < 2; ++retry) {
@@ -149,9 +153,9 @@ class MidiDispatcher : public midi::MidiDevice {
       }
     }
   }
-  
+
   static void Reset() { multi.Reset(); }
-  static void Clock() { 
+  static void Clock() {
     if (!multi.internal_clock()) {
       multi.Clock();
     }
@@ -159,7 +163,7 @@ class MidiDispatcher : public midi::MidiDevice {
   static void Start() { multi.Start(); }
   static void Stop() { multi.Stop(); }
   static void Continue() { multi.Continue(); }
-  
+
   static void SysExStart() {
     ProcessSysEx(0xf0);
   }
@@ -174,11 +178,11 @@ class MidiDispatcher : public midi::MidiDevice {
       display.set_status('#');
     }
   }
-  
+
   static uint8_t CheckChannel(uint8_t channel) {
     return 1;
   }
-  
+
   static void RawMidiData(
       uint8_t status,
       uint8_t* data,
@@ -194,17 +198,17 @@ class MidiDispatcher : public midi::MidiDevice {
       }
     }
   }
-  
+
   static void RawByte(uint8_t byte) {
     if (mode() == MIDI_OUT_THRU) {
       OutputBufferLowPriority::Overwrite(byte);
     }
   }
-  
+
   static uint8_t readable_high_priority() {
     return OutputBufferHighPriority::readable();
   }
-  
+
   static uint8_t readable_low_priority() {
     return OutputBufferLowPriority::readable();
   }
@@ -212,19 +216,19 @@ class MidiDispatcher : public midi::MidiDevice {
   static uint8_t ImmediateReadHighPriority() {
     return OutputBufferHighPriority::ImmediateRead();
   }
-  
+
   static uint8_t ImmediateReadLowPriority() {
     return OutputBufferLowPriority::ImmediateRead();
   }
-  
-  
+
+
   // ------ Generation of MIDI out messages ------------------------------------
   static inline void OnNote(Part* part, uint8_t note, uint8_t velocity) {
     if (mode() == MIDI_OUT_SEQUENCER) {
       Send3(0x90 | multi.part_channel(part), note, velocity);
     }
   }
-  
+
   static inline void ForwardNote(Part* part, uint8_t note, uint8_t velocity) {
     if (mode() == MIDI_OUT_CHAIN) {
       Send3(0x90 | multi.part_channel(part), note, velocity);
@@ -242,13 +246,13 @@ class MidiDispatcher : public midi::MidiDevice {
       SendNow(0xfc);
     }
   }
-  
+
   static inline void OnClock() {
     if (mode() == MIDI_OUT_SEQUENCER) {
       SendNow(0xf8);
     }
   }
-  
+
   static inline void OnProgramLoaded(
       uint8_t channel,
       uint8_t bank,
@@ -261,7 +265,7 @@ class MidiDispatcher : public midi::MidiDevice {
       Send3(0xc0 | channel, program & 0x7f, 0xfe);
     }
   }
-  
+
   static inline void OnEdit(Part* part, uint8_t address, uint8_t value) {
     if (mode() < MIDI_OUT_CONTROLLER) {
       return;
@@ -282,10 +286,10 @@ class MidiDispatcher : public midi::MidiDevice {
     Send3(0xb0 | channel, midi::kDataEntryMsb, msb);
     Send3(0xb0 | channel, midi::kDataEntryLsb, value & 0x7f);
   }
-  
+
   static void Send3(uint8_t status, uint8_t a, uint8_t b);
   static void SendBlocking(uint8_t byte);
-  
+
   static void Flush() {
     while (OutputBufferLowPriority::readable());
   }
@@ -300,11 +304,11 @@ class MidiDispatcher : public midi::MidiDevice {
     }
     Storage::SysExReceive(byte);
   }
-  
+
   static uint8_t current_bank_;
   static uint8_t data_entry_counter_;
   static uint8_t current_parameter_address_;
-  
+
   DISALLOW_COPY_AND_ASSIGN(MidiDispatcher);
 };
 

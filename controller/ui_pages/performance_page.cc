@@ -54,8 +54,8 @@ uint8_t PerformancePage::OnIncrement(int8_t increment) {
   if (note_active_) {
     if ((note_ < 0x7f && increment > 0) ||
         (note_ > 0 && increment < 0)) {
-      multi.StartNote(note_ + increment);
-      multi.StopNote(note_);
+      multi.StartNote(0, note_ + increment);
+      multi.StopNote(0, note_);
       note_ += increment;
     }
     return 1;
@@ -65,10 +65,10 @@ uint8_t PerformancePage::OnIncrement(int8_t increment) {
 /* static */
 uint8_t PerformancePage::OnClick() {
   if (!note_active_) {
-    multi.StartNote(note_);
+    multi.StartNote(0, note_);
     note_active_ = 1;
   } else {
-    multi.StopNote(note_);
+    multi.StopNote(0, note_);
     note_active_ = 0;
   }
   return 1;
