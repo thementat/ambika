@@ -702,6 +702,13 @@ void Part::InternalNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
     uint8_t legato = mono_allocator_.size() > 1;
     uint8_t pitch_drift = 0;
     for (uint8_t i = 0; i < num_allocated_voices_; ++i) {
+      if (1) {
+        voicecard_tx.WriteData(
+            allocated_voices_[i],
+            VOICECARD_DATA_MODULATION,
+            MOD_SRC_PITCH_BEND,
+            U14ShiftRight6(0x40 << 7));
+      }
       voicecard_tx.Trigger(
           allocated_voices_[i],
           tuned_note + pitch_drift,
@@ -729,6 +736,18 @@ void Part::InternalNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
       if (voice_index < poly_allocator_.size()) {
         voice_index <<= 1;
         uint16_t tuned_note = TuneNote(note);
+        if (1) {
+          voicecard_tx.WriteData(
+              allocated_voices_[voice_index],
+              VOICECARD_DATA_MODULATION,
+              MOD_SRC_PITCH_BEND,
+              U14ShiftRight6(0x40 << 7));
+          voicecard_tx.WriteData(
+              allocated_voices_[GetNextVoice(voice_index)],
+              VOICECARD_DATA_MODULATION,
+              MOD_SRC_PITCH_BEND,
+              U14ShiftRight6(0x40 << 7));
+        }
         voicecard_tx.Trigger(
             allocated_voices_[voice_index],
             tuned_note,
@@ -744,6 +763,13 @@ void Part::InternalNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
     } else if (data_.polyphony_mode == CHAIN) {
       if (voice_index < (poly_allocator_.size() >> 1)) {
         uint16_t tuned_note = TuneNote(note);
+        if (1) {
+          voicecard_tx.WriteData(
+              allocated_voices_[voice_index],
+              VOICECARD_DATA_MODULATION,
+              MOD_SRC_PITCH_BEND,
+              U14ShiftRight6(0x40 << 7));
+        }
         voicecard_tx.Trigger(
             allocated_voices_[voice_index],
             tuned_note + voice_index * data_.spread,
@@ -756,6 +782,13 @@ void Part::InternalNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
     } else {
       if (voice_index < poly_allocator_.size()) {
         uint16_t tuned_note = TuneNote(note);
+        if (1) {
+          voicecard_tx.WriteData(
+              allocated_voices_[voice_index],
+              VOICECARD_DATA_MODULATION,
+              MOD_SRC_PITCH_BEND,
+              U14ShiftRight6(0x40 << 7));
+        }
         voicecard_tx.Trigger(
             allocated_voices_[voice_index],
             tuned_note + voice_index * data_.spread,
@@ -778,7 +811,6 @@ void Part::InternalNoteOff(uint8_t channel, uint8_t note) {
     return;
   }
   midi_dispatcher.OnNote(this, note, 0);
-
   uint8_t retrigger_lfos = 0;
   if (data_.polyphony_mode == MONO) {
     uint8_t top_note = mono_allocator_.most_recent_note().note;
